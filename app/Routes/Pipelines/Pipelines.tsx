@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import styled from "styled-components"
-import { shell, remote } from "electron"
-import fs from "fs"
+import { shell } from "electron"
 import { useProjectData } from "./useProjectData"
 import Sidebar, { SideBarItem } from "../../components/Sidebar"
 import { useReadUserData, useWriteUserData } from "../../behaviour/useUserData"
@@ -189,6 +188,13 @@ const Pipelines: React.FC<PipelinesProps> = () => {
     ...projectList,
   ]
 
+  console.log(
+    resolvedProjectList,
+    readUserData({
+      fileName: PROJECT_LIST_FILE_NAME,
+    })
+  )
+
   const persistProjectList = (nextList: PipelineList) => {
     writeUserData({
       fileName: PROJECT_LIST_FILE_NAME,
@@ -204,7 +210,7 @@ const Pipelines: React.FC<PipelinesProps> = () => {
     })
   }
 
-  const list: SideBarItem[] = projectList.map((item, index) => {
+  const list: SideBarItem[] = resolvedProjectList.map((item, index) => {
     const key = item.fullPath || String(index)
     return {
       key,

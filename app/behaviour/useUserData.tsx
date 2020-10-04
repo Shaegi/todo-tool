@@ -19,7 +19,7 @@ export function useWriteUserData() {
   return useCallback((options: UseWriteDataOptions) => {
     const path = getPath(options.fileName)
     try {
-      fs.writeFileSync(path, JSON.stringify(options.data))
+      fs.writeFileSync(path, options.data)
     } catch (e) {
       console.log("error @ write file", e)
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -37,6 +37,7 @@ export function useReadUserData() {
   return useCallback((options: UseReadDataOptions) => {
     try {
       const data = fs.readFileSync(getPath(options.fileName), "UTF-8")
+      console.log(data, JSON.parse(data))
       return JSON.parse(data)
     } catch (e) {
       console.log("error @ read file", e)
