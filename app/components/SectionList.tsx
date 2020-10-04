@@ -155,7 +155,7 @@ const SectionList: React.FC<SectionListProps> = (props) => {
 
   const deleteSection = (section: Section) => {
     showModal(ModalTypes.CONFIRM, {
-      message: `Delete section "${section.label}"?`,
+      message: `Delete section "${section.label}" and all its ${section.items.length} items?`,
       onConfirm: () => {
         persistSectionList((prev) => {
           return prev.filter((s) => s.id !== section.id)
