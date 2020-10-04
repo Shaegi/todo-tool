@@ -1,15 +1,8 @@
 import React, { useState, useCallback, useContext } from "react"
-import { remote } from "electron"
-import fs from "fs"
-import path from "path"
-
-const { app } = remote
-
-const getSettingsPath = () =>
-  path.join(app.getPath("userData"), "settings.json")
+import { useReadUserData, useWriteUserData } from "./useUserData"
 
 type SettingsContext = {
-  settings?: Settings
+  settings: Settings
   resetSettings?: () => void
   persistSettings?: (key: keyof Settings, value: string) => void
 }
@@ -21,33 +14,30 @@ export type Settings = {
   jira?: string
   jiraDashboard?: string
   jiraBoard?: string
+  jiraTicketPrefix?: string
 }
 
-export const SettingsContext = React.createContext<SettingsContext>({})
+const SETTINGS_FILE_NAME = "settings"
+
+export const SettingsContext = React.createContext<SettingsContext>({} as any)
 
 const { Provider } = SettingsContext
 
 export const SettingsContextProvider: React.FC = (props) => {
-  const [settings, setSettings] = useState<Settings>(() => {
-    try {
-      const data = fs.readFileSync(getSettingsPath(), "UTF-8")
-      return JSON.parse(data)
-      return {}
-    } catch (e) {
-      return null
-    }
-  })
+  const readUserData = useReadUserData()
+  const writeUserData = useWriteUserData()
+  const [settings, setSettings] = useState<Settings>(
+    readUserData({ fileName: SETTINGS_FILE_NAME })
+  )
 
   const persistSettings: SettingsContext["persistSettings"] = useCallback(
     (key, value) => {
       setSettings((prev: Settings) => {
         const next = { ...prev, [key]: value }
-        const path = getSettingsPath()
-        try {
-          fs.writeFileSync(path, JSON.stringify(next))
-        } catch (e) {
-          console.log("error @ ready file", e)
-        }
+        writeUserData({
+          fileName: SETTINGS_FILE_NAME,
+          data: JSON.stringify(next),
+        })
 
         return next
       })

@@ -78,6 +78,12 @@ const SettingsRoute: React.FC<SettingsProps> = () => {
             value={settings?.jiraBoard}
             onChange={persistSettings}
           />
+          <SettingsInput
+            valueKey="jiraTicketPrefix"
+            label="Ticket Prefix"
+            value={settings?.jiraTicketPrefix}
+            onChange={persistSettings}
+          />
         </div>
       </div>
     </Wrapper>

@@ -1,6 +1,7 @@
-import React from "react"
+import React, { useState } from "react"
 import styled from "styled-components"
 import { shell } from "electron"
+import useSettings from "../behaviour/useSettings"
 
 const Wrapper = styled.div`
   input {
@@ -25,59 +26,46 @@ const Wrapper = styled.div`
   }
 `
 
-class JiraInput extends React.Component {
-  state = {
-    value: "",
+type JiraInputProps = {}
+
+const JiraInput: React.FC<JiraInputProps> = () => {
+  const [value, setValue] = useState("")
+
+  const handleChange = (ev: any) => {
+    setValue(ev.target.value)
   }
 
-  handleChange = (ev: any) => {
-    this.setState({ value: ev.target.value })
-  }
+  const {
+    settings: { jiraBoard, jira, jiraTicketPrefix, jiraDashboard },
+  } = useSettings()
 
-  handleKeyDown = (ev: any) => {
+  const handleKeyDown = (ev: any) => {
     if (ev.which === 13) {
-      this.setState({ value: "" })
-      shell.openExternal(
-        `${process.env.JIRA_URL}${process.env.JIRA_TICKET_PREFIX}${this.state.value}`
-      )
+      setValue("")
+      shell.openExternal(`${jira}${jiraTicketPrefix}${value}`)
     }
   }
 
-  render() {
-    console.log(process.env)
-    return (
-      <Wrapper>
-        <div className="headline">
-          <h2>Jira</h2>
-          <button
-            type="button"
-            onClick={() =>
-              shell.openExternal(
-                process.env.JIRA_URL! + process.env.JIRA_DASHBOARD!
-              )
-            }
-          >
-            Open Dashboard
-          </button>
-          <button
-            type="button"
-            onClick={() =>
-              shell.openExternal(
-                process.env.JIRA_URL! + process.env.JIRA_RAPIDBOARD!
-              )
-            }
-          >
-            Open Board
-          </button>
-        </div>
-        <input
-          onKeyDown={this.handleKeyDown}
-          onChange={this.handleChange}
-          value={this.state.value}
-        />
-      </Wrapper>
-    )
-  }
+  return (
+    <Wrapper>
+      <div className="headline">
+        <h2>Jira</h2>
+        <button
+          type="button"
+          onClick={() => jiraDashboard && shell.openExternal(jiraDashboard)}
+        >
+          Open Dashboard
+        </button>
+        <button
+          type="button"
+          onClick={() => jiraBoard && shell.openExternal(jiraBoard)}
+        >
+          Open Board
+        </button>
+      </div>
+      <input onKeyDown={handleKeyDown} onChange={handleChange} value={value} />
+    </Wrapper>
+  )
 }
 
 export default JiraInput
