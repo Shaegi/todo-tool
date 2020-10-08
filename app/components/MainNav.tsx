@@ -5,11 +5,13 @@ import Sidebar from "./Sidebar"
 export const HOME_PATH = "/"
 export const PIPELINE_PATH = "/pipeline"
 export const SETTINGS_PATH = "/settings"
+export const TODO_PATH = "/todo"
 
 const MainNav = () => {
   const isHome = useRouteMatch(HOME_PATH)
   const isPipeline = useRouteMatch(PIPELINE_PATH)
   const isSettings = useRouteMatch(SETTINGS_PATH)
+  const isTodo = useRouteMatch(TODO_PATH)
 
   const mainNavItems = [
     {
@@ -25,17 +27,30 @@ const MainNav = () => {
       ),
     },
     {
+      key: TODO_PATH,
+      active: !!isTodo,
+      Renderer: (
+        <Link to={TODO_PATH}>
+          <div>
+            ✨ <br />
+            Todo
+          </div>
+        </Link>
+      ),
+    },
+    {
       key: PIPELINE_PATH,
       active: !!isPipeline,
       Renderer: (
         <Link to={PIPELINE_PATH}>
           <div>
             🌈 <br />
-            Pipeline
+            Pipelines
           </div>
         </Link>
       ),
     },
+
     {
       key: SETTINGS_PATH,
       active: !!isSettings,

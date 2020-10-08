@@ -6,6 +6,7 @@ import fs from "fs"
 import path from "path"
 import { v4 } from "uuid"
 import useModal, { ModalTypes } from "../behaviour/useModal"
+import ConfirmControls from "./ConfirmControls"
 
 const { app } = remote
 
@@ -280,14 +281,10 @@ const AddLinkInput: React.FC<AddLinkInputProps> = (props) => {
             value={addLinkURLValue}
             onChange={(e) => setAddLinkURLValue(e.target.value)}
           />
-          <span>
-            <button type="button" onClick={handleAdd}>
-              ✔️
-            </button>
-            <button type="button" onClick={handleCancelAddLink}>
-              ❌
-            </button>
-          </span>
+          <ConfirmControls
+            onConfirm={handleAdd}
+            onDecline={handleCancelAddLink}
+          />
         </>
       )}
     </>
@@ -356,14 +353,10 @@ const AddSectionInput: React.FC<AddSectionInputProps> = (props) => {
               )
             })}
           </select>
-          <span>
-            <button type="button" onClick={handleAdd}>
-              ✔️
-            </button>
-            <button type="button" onClick={handleCancelSectionMode}>
-              ❌
-            </button>
-          </span>
+          <ConfirmControls
+            onConfirm={handleAdd}
+            onDecline={handleCancelSectionMode}
+          />
         </>
       )}
     </>

@@ -23,6 +23,7 @@ module.exports = {
     "@typescript-eslint/ban-ts-comment": "off",
     "react/jsx-props-no-spreading": "off",
     "no-param-reassign": "off",
+    "react/display-name": "off",
     "no-plusplus": "off",
   },
   parserOptions: {

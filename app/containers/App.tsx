@@ -9,8 +9,10 @@ import MainNav, {
   HOME_PATH,
   PIPELINE_PATH,
   SETTINGS_PATH,
+  TODO_PATH,
 } from "../components/MainNav"
 import { ModalContextProvider } from "../behaviour/useModal"
+import Todo from "../Routes/Todo/Todo"
 
 const Main = styled.div`
   display: flex;
@@ -30,6 +32,9 @@ export default function App() {
             </Route>
             <Route path={PIPELINE_PATH}>
               <Pipelines />
+            </Route>
+            <Route path={TODO_PATH}>
+              <Todo />
             </Route>
             <Route path={SETTINGS_PATH}>
               <SettingsRoute />

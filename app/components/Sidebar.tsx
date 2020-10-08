@@ -34,6 +34,7 @@ export type SideBarItem = {
   active?: boolean
   key: string
   Renderer: React.ReactNode
+  onClick?: (e: React.MouseEvent) => void
 }
 
 export type SideBarProps = {
@@ -44,9 +45,9 @@ const Sidebar: React.FC<SideBarProps> = ({ items }) => {
   return (
     <StyledSidebar>
       <ul>
-        {items.map(({ key, active, Renderer }) => {
+        {items.map(({ key, active, Renderer, onClick }) => {
           return (
-            <SidebarItem key={key} active={active}>
+            <SidebarItem key={key} active={active} onClick={onClick}>
               {Renderer}
             </SidebarItem>
           )
