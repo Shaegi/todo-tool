@@ -1,5 +1,7 @@
 import React, { useState } from "react"
 import styled from "styled-components"
+import Button from "../../../components/common/Button"
+import DoneList, { DoneItem } from "./DoneList"
 
 const Wrapper = styled.div`
   .input {
@@ -24,11 +26,6 @@ const Wrapper = styled.div`
   .emptyList {
     text-align: center;
     user-select: none;
-  }
-
-  .showDone {
-    display: flex;
-    align-items: center;
   }
 
   .addPrio {
@@ -60,24 +57,12 @@ const Wrapper = styled.div`
       }
     }
   }
-
-  .doneList {
-    li {
-      span {
-        text-decoration: line-through;
-      }
-    }
-  }
 `
 
-type ToDoItem = {
+export type ToDoItem = {
   index: number
   prio: number
   name: string
-}
-
-type DoneItem = ToDoItem & {
-  index: number
 }
 
 type ListState = {
@@ -86,13 +71,12 @@ type ListState = {
   showDone: boolean
   inputValue: string
 }
-type ListProps = any
+type ListProps = {}
 
-const List: React.FC<ListProps> = () => {
+const List: React.FC<ListProps> = (props) => {
   const [inputValue, setInputValue] = useState("")
   const [list, setList] = useState<ToDoItem[]>([])
   const [doneList, setDoneList] = useState<DoneItem[]>([])
-  const [showDone, setShowDone] = useState(false)
 
   const addListItem = (item: ToDoItem | null = null, prio = 0) => {
     if (!item && inputValue.trim().length === 0) {
@@ -130,7 +114,7 @@ const List: React.FC<ListProps> = () => {
     return [...prio.reverse(), ...common.reverse()]
   }
 
-  const readItem = (item: ToDoItem) => {
+  const handleReAddItem = (item: ToDoItem) => {
     setDoneList((prev) => prev.filter((i) => i.index !== item.index))
     addListItem({ ...item, index: list.length })
   }
@@ -144,16 +128,12 @@ const List: React.FC<ListProps> = () => {
             setInputValue(e.target.value)
           }}
         />
-        <button type="button" onClick={() => addListItem(null, 0)}>
-          ✔️
-        </button>
-        <button
-          type="button"
+        <Button emoji="✔️" onClick={() => addListItem(null, 0)} />
+        <Button
           className="addPrio"
+          emoji="✔️"
           onClick={() => addListItem(null, 1)}
-        >
-          ✔️
-        </button>
+        />
       </div>
       {list.length > 0 ? (
         <ul className="list">
@@ -164,12 +144,8 @@ const List: React.FC<ListProps> = () => {
                   {item.prio === 1 ? "🚨" : "📝"}
                   {item.name}
                 </span>
-                <button type="button" onClick={() => removeItem(item, true)}>
-                  ✔️
-                </button>
-                <button type="button" onClick={() => removeItem(item, false)}>
-                  ❌
-                </button>
+                <Button emoji="✔️" onClick={() => removeItem(item, true)} />
+                <Button emoji="❌" onClick={() => removeItem(item, false)} />
               </li>
             )
           })}
@@ -177,34 +153,7 @@ const List: React.FC<ListProps> = () => {
       ) : (
         <div className="emptyList">✨ Nothing todo ✨</div>
       )}
-      <div>
-        <button
-          type="button"
-          className="showDone"
-          onClick={() => setShowDone((p) => !p)}
-        >
-          {showDone ? "Hide" : "Show"} Done
-          {showDone ? "🔽" : "🔼"}
-        </button>
-        {showDone ? (
-          doneList.length > 0 ? (
-            <ul className="doneList">
-              {doneList.map((item) => {
-                return (
-                  <li key={item.name} onDoubleClick={() => readItem(item)}>
-                    <span title={item.name}>👌{item.name}</span>
-                    <button type="button" onClick={() => readItem(item)}>
-                      ✅
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
-          ) : (
-            <div>No items done yet</div>
-          )
-        ) : null}
-      </div>
+      <DoneList list={doneList} onReAddItem={handleReAddItem} />
     </Wrapper>
   )
 }

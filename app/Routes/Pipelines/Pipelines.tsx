@@ -1,9 +1,10 @@
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 import styled from "styled-components"
 import { shell } from "electron"
 import { useProjectData } from "./useProjectData"
 import Sidebar, { SideBarItem } from "../../components/Sidebar"
 import { useReadUserData, useWriteUserData } from "../../behaviour/useUserData"
+import TabBar, { TabBarItem } from "../../components/TabBar"
 
 const PROJECT_LIST_FILE_NAME = "projectList"
 
@@ -31,7 +32,6 @@ const getIconByFailedCount = (count: number) => {
 }
 
 type PipelineSidebarItemProps = {
-  onSelect: (index: number) => void
   index: number
   fullPath: string | null
   icon?: string
@@ -40,21 +40,12 @@ type PipelineSidebarItemProps = {
 }
 
 const PipelineSidebarItem: React.FC<PipelineSidebarItemProps> = ({
-  onSelect,
   index,
   fullPath,
   customLabel,
   addItem,
 }) => {
   const { data, loading } = useProjectData(fullPath, !!addItem)
-
-  // const myNotification = new Notification('Title', {
-  //   body: 'Lorem Ipsum Dolor Sit Amet'
-  // })
-
-  // myNotification.onclick = () => {
-  //   console.log('Notification clicked')
-  // }
 
   const failedCount =
     (data &&
@@ -72,7 +63,7 @@ const PipelineSidebarItem: React.FC<PipelineSidebarItemProps> = ({
   }
 
   return (
-    <div onClick={() => onSelect(index)}>
+    <div>
       <div>
         {loading ? (
           <span>Loading...</span>
@@ -170,29 +161,12 @@ type PipelineList = PipelineItem[]
 type PipelinesProps = {}
 
 const Pipelines: React.FC<PipelinesProps> = () => {
-  const [selected, setSelected] = React.useState(0)
   const readUserData = useReadUserData()
   const writeUserData = useWriteUserData()
   const [projectList, dispatchProjectList] = React.useState<PipelineList>(
     readUserData({
       fileName: PROJECT_LIST_FILE_NAME,
     }) || []
-  )
-
-  const resolvedProjectList: PipelineList = [
-    {
-      fullPath: null,
-      customLabel: "Add",
-      addItem: true,
-    },
-    ...projectList,
-  ]
-
-  console.log(
-    resolvedProjectList,
-    readUserData({
-      fileName: PROJECT_LIST_FILE_NAME,
-    })
   )
 
   const persistProjectList = (nextList: PipelineList) => {
@@ -210,38 +184,38 @@ const Pipelines: React.FC<PipelinesProps> = () => {
     })
   }
 
-  const list: SideBarItem[] = resolvedProjectList.map((item, index) => {
-    const key = item.fullPath || String(index)
-    return {
-      key,
-      active: index === selected,
-      Renderer: (
-        <PipelineSidebarItem
-          {...item}
-          key={key}
-          onSelect={setSelected}
-          index={index}
-        />
-      ),
-    }
-  })
-
   const handleAddItem = (item: PipelineItem) => {
     setProjectList((p) => [...p, item])
   }
 
+  const sidebarItems = useMemo<TabBarItem[]>(() => {
+    return [
+      {
+        key: "add-item",
+        Renderer: (
+          <div>
+            <div>Add</div>
+          </div>
+        ),
+        ContentRenderer: <PipelineAdd onAdd={handleAddItem} />,
+      },
+      ...projectList.map((item, index) => {
+        const key = item.fullPath || String(index)
+        return {
+          key,
+          Renderer: <PipelineSidebarItem {...item} key={key} index={index} />,
+          ContentRenderer: <Pipeline fullPath={item.fullPath} />,
+        }
+      }),
+    ]
+  }, [projectList])
+
   return (
     <div style={{ display: "flex", width: "100%" }}>
-      <Sidebar items={list} />
-      {resolvedProjectList.map(({ fullPath, addItem }, index) => {
-        return index === selected ? (
-          addItem ? (
-            <PipelineAdd onAdd={handleAddItem} />
-          ) : (
-            <Pipeline fullPath={fullPath} />
-          )
-        ) : null
-      })}
+      <TabBar
+        items={sidebarItems}
+        initialActiveIndex={sidebarItems.length === 1 ? 0 : 1}
+      />
     </div>
   )
 }

@@ -7,6 +7,7 @@ import path from "path"
 import { v4 } from "uuid"
 import useModal, { ModalTypes } from "../behaviour/useModal"
 import ConfirmControls from "./ConfirmControls"
+import EmojiSelect from "./EmojiSelect"
 
 const { app } = remote
 
@@ -291,8 +292,6 @@ const AddLinkInput: React.FC<AddLinkInputProps> = (props) => {
   )
 }
 
-const icons = ["", "📠", "👨‍💻", "⚙️", "⚒"]
-
 type AddSectionInputProps = {
   onAdd: (section: Section) => void
 }
@@ -337,22 +336,10 @@ const AddSectionInput: React.FC<AddSectionInputProps> = (props) => {
             value={addSectionValue}
             onChange={(e) => setAddActionValue(e.target.value)}
           />
-          <select
-            value={sectionIconValue}
+          <EmojiSelect
             onChange={(e) => setSectionIconValue(e.target.value)}
-          >
-            {icons.map((i) => {
-              return (
-                <option
-                  key={i}
-                  selected={sectionIconValue === i ? true : undefined}
-                  value={i}
-                >
-                  {i}
-                </option>
-              )
-            })}
-          </select>
+            initialValue={sectionIconValue}
+          />
           <ConfirmControls
             onConfirm={handleAdd}
             onDecline={handleCancelSectionMode}

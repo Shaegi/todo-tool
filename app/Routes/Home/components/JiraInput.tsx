@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import styled from "styled-components"
 import { shell } from "electron"
-import useSettings from "../behaviour/useSettings"
+import useSettings from "../../../behaviour/useSettings"
 
 const Wrapper = styled.div`
   input {

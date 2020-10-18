@@ -4,7 +4,7 @@ import { HashRouter as Router, Switch, Route } from "react-router-dom"
 
 import Pipelines from "../Routes/Pipelines/Pipelines"
 import SettingsRoute from "../Routes/Settings/index"
-import Home from "../Routes/Home"
+import Home from "../Routes/Home/Home"
 import MainNav, {
   HOME_PATH,
   PIPELINE_PATH,

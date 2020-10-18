@@ -1,11 +1,12 @@
-import React, { useMemo, useState } from "react"
+import React, { useMemo, useRef, useState } from "react"
 import { v4 } from "uuid"
 import styled from "styled-components"
 import { useReadUserData, useWriteUserData } from "../../behaviour/useUserData"
-import TabBar, { TabBarItem } from "../../components/TabBar"
+import TabBar, { TabBarItem, TabBarRef } from "../../components/TabBar"
 import EmojiSelect from "../../components/EmojiSelect"
-import List from "../../components/Todo/List"
+import List from "./components/List"
 import ConfirmControls from "../../components/ConfirmControls"
+import Button from "../../components/common/Button"
 
 export const TODO_LIST_PATH = "todoList"
 
@@ -30,6 +31,7 @@ export type ToDoListItem = {
 const Todo: React.FC<TodoProps> = (props) => {
   const writeUserData = useWriteUserData()
   const readUserData = useReadUserData()
+  const tabBarRef = useRef<TabBarRef>(null)
   const [list, setList] = useState<ToDoListItem[]>(
     readUserData({
       fileName: TODO_LIST_PATH,
@@ -50,11 +52,23 @@ const Todo: React.FC<TodoProps> = (props) => {
   }
 
   const handleAdd: AddItemContentProps["onAdd"] = (item) => {
-    dispatchList((p) => [...p, item])
+    dispatchList((p) => {
+      const next = [...p, item]
+      tabBarRef.current?.setIndex(next.length)
+      return next
+    })
   }
 
-  const sidebarItems = useMemo(() => {
-    const items: TabBarItem[] = [
+  const deleteItem = (item: ToDoListItem) => {
+    dispatchList((p) => {
+      const next = p.filter((p) => p.id !== item.id)
+      tabBarRef.current?.setIndex(next.length)
+      return next
+    })
+  }
+
+  const sidebarItems = useMemo<TabBarItem[]>(() => {
+    return [
       {
         key: "add-item",
         Renderer: (
@@ -71,6 +85,13 @@ const Todo: React.FC<TodoProps> = (props) => {
             <div className="content">
               <h1>
                 {item.icon} {item.label}
+                <Button
+                  emoji="🗑"
+                  className="delete-button"
+                  onClick={() => deleteItem(item)}
+                >
+                  Delete
+                </Button>
               </h1>
               <List />
             </div>
@@ -86,12 +107,12 @@ const Todo: React.FC<TodoProps> = (props) => {
         }
       }),
     ]
-    return items
-  }, [])
+  }, [list])
 
   return (
     <Wrapper className="todo-view">
       <TabBar
+        ref={tabBarRef}
         items={sidebarItems}
         initialActiveIndex={sidebarItems.length === 1 ? 0 : 1}
       />

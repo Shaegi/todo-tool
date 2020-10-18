@@ -1,8 +1,7 @@
 import React, { useState } from "react"
 import styled from "styled-components"
-import SectionList from "../components/SectionList"
-import TodoList from "../components/todo/List"
-import JiraInput from "../components/JiraInput"
+import SectionList from "../../components/SectionList"
+import JiraInput from "./components/JiraInput"
 
 const Wrapper = styled.div`
   padding: 16px;
@@ -41,7 +40,6 @@ const Home: React.FC = () => {
         </div>
         <SectionList editMode={editMode} />
       </div>
-      <TodoList />
     </Wrapper>
   )
 }
