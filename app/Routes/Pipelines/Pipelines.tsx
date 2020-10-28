@@ -5,6 +5,7 @@ import { useProjectData } from "./useProjectData"
 import Sidebar, { SideBarItem } from "../../components/Sidebar"
 import { useReadUserData, useWriteUserData } from "../../behaviour/useUserData"
 import TabBar, { TabBarItem } from "../../components/TabBar"
+import ListHeadline from "../../components/ListHeadline"
 
 const PROJECT_LIST_FILE_NAME = "projectList"
 
@@ -102,7 +103,7 @@ const Pipeline: React.FC<PipelineProps> = (props) => {
 
   return (
     <StyledPipeline>
-      <h4>{name}</h4>
+      <ListHeadline label={name} onDelete={() => null} />
       {pipelines.edges.length > 0 ? (
         pipelines.edges.map(({ node }) => {
           return (
@@ -137,7 +138,7 @@ const PipelineAdd: React.FC<PipelineAddProps> = (props) => {
   }
   return (
     <div>
-      <label>Enter FullPath to project</label>
+      <span>Enter FullPath to project</span>
       <input
         value={fullPath}
         onChange={(ev) => setFullPathValue(ev.target.value)}

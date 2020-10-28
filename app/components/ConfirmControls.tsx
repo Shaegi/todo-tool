@@ -12,7 +12,7 @@ const ConfirmControls: React.FC<ConfirmControlsProps> = (props) => {
   const { onConfirm, onDecline } = props
 
   return (
-    <Wrapper>
+    <Wrapper className="confirm-controls">
       <button type="button" onClick={onConfirm}>
         <span role="img" aria-label="accept">
           ✔️

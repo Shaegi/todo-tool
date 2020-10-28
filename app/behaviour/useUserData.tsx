@@ -19,6 +19,7 @@ export function useWriteUserData() {
   return useCallback((options: UseWriteDataOptions) => {
     const path = getPath(options.fileName)
     try {
+      console.log("write", options.data)
       fs.writeFileSync(path, options.data)
     } catch (e) {
       console.log("error @ write file", e)
@@ -37,7 +38,6 @@ export function useReadUserData() {
   return useCallback((options: UseReadDataOptions) => {
     try {
       const data = fs.readFileSync(getPath(options.fileName), "UTF-8")
-      console.log(data, JSON.parse(data))
       return JSON.parse(data)
     } catch (e) {
       console.log("error @ read file", e)

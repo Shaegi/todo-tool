@@ -38,7 +38,7 @@ const DoneList: React.FC<DoneListProps> = (props) => {
         className="showDone"
         onClick={() => setShowDone((p) => !p)}
       >
-        {showDone ? "Hide" : "Show"} Done
+        {showDone ? "Hide" : "Show"} Done ({doneList.length})
         {showDone ? "🔽" : "🔼"}
       </button>
       {showDone ? (

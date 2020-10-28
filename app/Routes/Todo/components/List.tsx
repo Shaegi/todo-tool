@@ -1,5 +1,9 @@
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 import styled from "styled-components"
+import {
+  useWriteUserData,
+  useReadUserData,
+} from "../../../behaviour/useUserData"
 import Button from "../../../components/common/Button"
 import DoneList, { DoneItem } from "./DoneList"
 
@@ -71,12 +75,59 @@ type ListState = {
   showDone: boolean
   inputValue: string
 }
-type ListProps = {}
+type ListProps = {
+  id: string
+  headline: string
+}
 
 const List: React.FC<ListProps> = (props) => {
+  const { id } = props
+
+  const writeUserData = useWriteUserData()
+  const readUserData = useReadUserData()
+
+  const readData = useMemo(() => {
+    const data = readUserData({
+      fileName: id,
+    })
+
+    return (
+      data ?? {
+        list: [],
+        doneList: [],
+      }
+    )
+  }, [])
+
   const [inputValue, setInputValue] = useState("")
-  const [list, setList] = useState<ToDoItem[]>([])
-  const [doneList, setDoneList] = useState<DoneItem[]>([])
+
+  const [list, dispatchList] = useState<ToDoItem[]>(readData.list)
+  const [doneList, dispatchDoneList] = useState<DoneItem[]>(readData.doneList)
+
+  const setLists = (
+    setList: (prev: ToDoItem[]) => ToDoItem[],
+    setDoneList: (prev: DoneItem[]) => DoneItem[]
+  ) => {
+    dispatchList((prevList) => {
+      const nextList = setList(prevList)
+
+      dispatchDoneList((prevDoneList) => {
+        const nextDoneList = setDoneList(prevDoneList)
+
+        writeUserData({
+          data: JSON.stringify({
+            list: nextList,
+            doneList: nextDoneList,
+          }),
+          fileName: id,
+        })
+
+        return nextDoneList
+      })
+
+      return nextList
+    })
+  }
 
   const addListItem = (item: ToDoItem | null = null, prio = 0) => {
     if (!item && inputValue.trim().length === 0) {
@@ -89,15 +140,17 @@ const List: React.FC<ListProps> = (props) => {
       prio,
     }
     setInputValue("")
-    setList((prev) => [...prev, addItem])
+    setLists(
+      (prev) => [...prev, addItem],
+      (p) => p
+    )
   }
 
   const removeItem = (item: DoneItem, done = false) => {
-    if (done) {
-      setDoneList((prev) => [...prev, { ...item, index: prev.length }])
-    }
-
-    setList((prev) => prev.filter((i) => i.index !== item.index))
+    setLists(
+      (prev) => prev.filter((i) => i.index !== item.index),
+      (prev) => (!done ? prev : [...prev, { ...item, index: prev.length }])
+    )
   }
 
   const getSortedByPriority = (list: ListState["list"]) => {
@@ -115,8 +168,10 @@ const List: React.FC<ListProps> = (props) => {
   }
 
   const handleReAddItem = (item: ToDoItem) => {
-    setDoneList((prev) => prev.filter((i) => i.index !== item.index))
-    addListItem({ ...item, index: list.length })
+    setLists(
+      (p) => p,
+      (prev) => prev.filter((i) => i.index !== item.index)
+    )
   }
 
   return (

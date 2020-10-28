@@ -6,7 +6,7 @@ import TabBar, { TabBarItem, TabBarRef } from "../../components/TabBar"
 import EmojiSelect from "../../components/EmojiSelect"
 import List from "./components/List"
 import ConfirmControls from "../../components/ConfirmControls"
-import Button from "../../components/common/Button"
+import ListHeadline from "../../components/ListHeadline"
 
 export const TODO_LIST_PATH = "todoList"
 
@@ -28,7 +28,7 @@ export type ToDoListItem = {
   icon: string
 }
 
-const Todo: React.FC<TodoProps> = (props) => {
+const Todo: React.FC<TodoProps> = () => {
   const writeUserData = useWriteUserData()
   const readUserData = useReadUserData()
   const tabBarRef = useRef<TabBarRef>(null)
@@ -79,21 +79,20 @@ const Todo: React.FC<TodoProps> = (props) => {
         ContentRenderer: <AddItemContent onAdd={handleAdd} />,
       },
       ...list.map((item) => {
+        const headlineLabel = (
+          <span>
+            {item.icon} {item.label}
+          </span>
+        )
         return {
           key: item.id,
           ContentRenderer: (
-            <div className="content">
-              <h1>
-                {item.icon} {item.label}
-                <Button
-                  emoji="🗑"
-                  className="delete-button"
-                  onClick={() => deleteItem(item)}
-                >
-                  Delete
-                </Button>
-              </h1>
-              <List />
+            <div className="content" key={item.id}>
+              <ListHeadline
+                label={headlineLabel}
+                onDelete={() => deleteItem(item)}
+              />
+              <List headline={item.label} id={item.id} />
             </div>
           ),
           Renderer: (
