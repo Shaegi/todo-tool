@@ -8,13 +8,15 @@ import {
   useGitUser,
   useProjectData,
 } from "../../behaviour/useProjectData"
-import { statusEmojiMap } from "../../utils"
+import { pipelineStatusEmojiMap } from "../../utils"
 import Button from "../../../../components/common/Button"
 
 const StyledPipeline = styled.ul`
   max-height: 95%;
   overflow: auto;
   width: 100%;
+  padding-left: 8px;
+
   .pipeline {
     padding: 5px;
     display: block;
@@ -23,6 +25,7 @@ const StyledPipeline = styled.ul`
   .filter {
     display: flex;
     align-items: center;
+    padding-bottom: 8px;
     .filter-label {
       padding-right: 8px;
     }
@@ -40,7 +43,7 @@ const pipelineStatusFilterItems = (Object.keys(
   PipelineStatus
 ) as PipelineStatus[]).map((status) => ({
   value: status,
-  label: statusEmojiMap[status],
+  label: pipelineStatusEmojiMap[status],
 }))
 
 const userFilterItems = [
@@ -88,10 +91,10 @@ const Pipeline: React.FC<PipelineProps> = (props) => {
   }, [data, statusFilter, userFilter])
 
   if (loading) {
-    return <div>eh?</div>
+    return <div>Loading</div>
   }
   if (!(data && data.project)) {
-    return <div>eh?????</div>
+    return <div>Received corrupted data. Try again or delete project.</div>
   }
   const { project } = data
   const { name } = project
@@ -114,10 +117,15 @@ const Pipeline: React.FC<PipelineProps> = (props) => {
           />
         </div>
       </div>
+
       {resolvedPipelines.length > 0 ? (
-        resolvedPipelines.map(({ node }) => {
-          return <PipelineListItem pipeline={node} user={user} key={node.id} />
-        })
+        <div className="pipeline-list">
+          {resolvedPipelines.map(({ node }) => {
+            return (
+              <PipelineListItem pipeline={node} user={user} key={node.id} />
+            )
+          })}
+        </div>
       ) : (
         <div className="no-result">
           No piplines available

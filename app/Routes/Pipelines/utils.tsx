@@ -1,4 +1,4 @@
-import { PipelineStatus } from "./behaviour/useProjectData"
+import { PipelineStatus, StageStatus } from "./behaviour/useProjectData"
 
 /* eslint-disable import/prefer-default-export */
 export const getIconByFailedCount = (count: number) => {
@@ -14,8 +14,16 @@ export const getIconByFailedCount = (count: number) => {
   return ""
 }
 
-export const statusEmojiMap: Record<PipelineStatus, string> = {
+export const pipelineStatusEmojiMap: Record<PipelineStatus, string> = {
   [PipelineStatus.RUNNING]: "🏃",
   [PipelineStatus.FAILED]: "❌",
   [PipelineStatus.SUCCESS]: "✔️",
+  [PipelineStatus.SKIPPED]: "⏩",
+}
+
+export const stageStatusToEmojiMap: Record<StageStatus, string> = {
+  [StageStatus.RUNNING]: "🏃",
+  [StageStatus.FAILED]: "❌",
+  [StageStatus.SUCCESS]: "✔️",
+  [StageStatus.SKIPPED]: "⏩",
 }

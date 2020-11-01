@@ -1,16 +1,30 @@
-import React, { useCallback, useMemo } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { shell } from "electron"
 import styled from "styled-components"
 import classNames from "classnames"
 import useSettings from "../../../../behaviour/useSettings"
 import { Pipeline, useGitUser } from "../../behaviour/useProjectData"
-import { statusEmojiMap } from "../../utils"
+import Stages from "./Stages"
+import { pipelineStatusEmojiMap } from "../../utils"
 
 export const pipelineListItemClass = "pipeline-list-item"
 
 const Wrapper = styled.li`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 4px 8px;
   cursor: pointer;
+
+  .left-section {
+    display: flex;
+
+    .duration,
+    .status {
+      display: flex;
+      align-items: center;
+    }
+  }
 
   .user {
     display: flex;
@@ -42,6 +56,7 @@ const PipelineListItem: React.FC<PipelineListItemProps> = (props) => {
     settings: { git },
   } = useSettings()
 
+  const [finishedAgo, setFinishedAgo] = useState<string | null>(null)
   const handleOpen = useCallback(() => {
     shell.openExternal(git + detailedStatus.detailsPath)
   }, [detailedStatus])
@@ -52,56 +67,78 @@ const PipelineListItem: React.FC<PipelineListItemProps> = (props) => {
     return `🕒 ${minutes}:${seconds > 10 ? seconds : `0${seconds}`}`
   }, [duration])
 
-  const finishedAgo = useMemo(() => {
-    const currDate = new Date()
-    const finishedDate = new Date(finishedAt)
+  useEffect(() => {
+    let interval: null | ReturnType<typeof setInterval> = null
+    if (finishedAt) {
+      const refresh = () => {
+        const refreshed = (() => {
+          const currDate = new Date()
+          const finishedDate = new Date(finishedAt)
 
-    // @ts-ignore
-    const secSince = (currDate - finishedDate) / 1000
+          // @ts-ignore
+          const secSince = (currDate - finishedDate) / 1000
 
-    const days = Math.floor(secSince / 60 / 60 / 24)
+          const days = Math.floor(secSince / 60 / 60 / 24)
 
-    if (days > 0) {
-      return `${days} days ago`
+          if (days > 0) {
+            return `${days} days ago`
+          }
+          const hours = Math.floor(secSince / 60 / 60)
+          if (hours > 0) {
+            return `${hours} hours ago`
+          }
+          const minutes = Math.floor(secSince / 60)
+          if (minutes > 0) {
+            return `${minutes} minutes ago`
+          }
+          return `${secSince} seconds ago`
+        })()
+        setFinishedAgo(refreshed)
+      }
+      interval = setInterval(() => {
+        refresh()
+      }, 60000)
+
+      refresh()
     }
-    const hours = Math.floor(secSince / 60 / 60)
-    if (hours > 0) {
-      return `${hours} hours ago`
+
+    return () => {
+      if (interval) {
+        clearInterval(interval)
+      }
     }
-    const minutes = Math.floor(secSince / 60)
-    if (minutes > 0) {
-      return `${minutes} minutes ago`
-    }
-    return `${secSince} seconds ago`
   }, [finishedAt])
 
   return (
     <Wrapper className={pipelineListItemClass} onClick={handleOpen}>
-      <div
-        className="status"
-        title={status[0] + status.substring(1, status.length).toLowerCase()}
-      >
-        {statusEmojiMap[status]}
-      </div>
-      <div className="duration">{resolvedDuration}</div>
-      <div className="user">
-        <img
-          src={git + pipeline.user.avatarUrl}
-          className="user-img"
-          alt="avatar"
-        />
-        <span className={classNames("user-name")}>
-          {pipeline.user.name}
-          {pipeline.user.id === userId && (
-            <span
-              className="active-user-indicator"
-              role="img"
-              aria-label="active user"
-            >
-              👋
-            </span>
-          )}
-        </span>
+      <div className="left-section">
+        <div
+          className="status"
+          title={status[0] + status.substring(1, status.length).toLowerCase()}
+        >
+          {pipelineStatusEmojiMap[status]}
+        </div>
+        <div className="duration">{resolvedDuration}</div>
+        <Stages stages={pipeline.stages.edges} />
+        <div className="user">
+          <img
+            src={git + pipeline.user.avatarUrl}
+            className="user-img"
+            alt="avatar"
+          />
+          <span className={classNames("user-name")}>
+            {pipeline.user.name}
+            {pipeline.user.id === userId && (
+              <span
+                className="active-user-indicator"
+                role="img"
+                aria-label="active user"
+              >
+                👋
+              </span>
+            )}
+          </span>
+        </div>
       </div>
       <div>{finishedAgo}</div>
     </Wrapper>

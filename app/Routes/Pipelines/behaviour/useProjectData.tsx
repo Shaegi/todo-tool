@@ -17,6 +17,16 @@ export const ProjectQuery = gql`
             detailedStatus {
               detailsPath
             }
+            stages {
+              edges {
+                node {
+                  name
+                  detailedStatus {
+                    group
+                  }
+                }
+              }
+            }
             user {
               id
               name
@@ -39,11 +49,31 @@ export enum PipelineStatus {
   RUNNING = "RUNNING",
   SUCCESS = "SUCCESS",
   FAILED = "FAILED",
+  SKIPPED = "SKIPPED",
+}
+
+export enum StageStatus {
+  RUNNING = "running",
+  SUCCESS = "success",
+  SKIPPED = "skipped",
+  FAILED = "failed",
+}
+
+export type PipelineStage = {
+  node: {
+    name: string
+    detailedStatus: {
+      group: StageStatus
+    }
+  }
 }
 
 export type Pipeline = {
   detailedStatus: {
     detailsPath: string
+  }
+  stages: {
+    edges: PipelineStage[]
   }
   user: {
     id: string
