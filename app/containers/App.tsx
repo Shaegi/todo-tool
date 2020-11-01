@@ -13,6 +13,7 @@ import MainNav, {
 } from "../components/MainNav"
 import { ModalContextProvider } from "../behaviour/useModal"
 import Todo from "../Routes/Todo/Todo"
+import { useWatchProjects } from "../Routes/Pipelines/useProjectData"
 
 const Main = styled.div`
   display: flex;
@@ -21,6 +22,7 @@ const Main = styled.div`
 `
 
 export default function App() {
+  useWatchProjects()
   return (
     <Main>
       <ModalContextProvider>

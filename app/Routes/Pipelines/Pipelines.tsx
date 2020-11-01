@@ -1,13 +1,20 @@
+/* eslint-disable promise/catch-or-return */
 import React, { useMemo, useState } from "react"
 import styled from "styled-components"
-import { shell } from "electron"
-import { useProjectData } from "./useProjectData"
-import Sidebar, { SideBarItem } from "../../components/Sidebar"
+import { shell, remote } from "electron"
+import { useApolloClient } from "@apollo/react-hooks"
+import { CircularProgress } from "@material-ui/core"
+import {
+  useProjectData,
+  ProjectQuery,
+  ProjectQueryResult,
+} from "./useProjectData"
 import { useReadUserData, useWriteUserData } from "../../behaviour/useUserData"
 import TabBar, { TabBarItem } from "../../components/TabBar"
 import ListHeadline from "../../components/ListHeadline"
+import Button from "../../components/common/Button"
 
-const PROJECT_LIST_FILE_NAME = "projectList"
+export const PROJECT_LIST_FILE_NAME = "projectList"
 
 const StyledPipeline = styled.ul`
   max-height: 95%;
@@ -129,23 +136,54 @@ type PipelineAddProps = {
 
 const PipelineAdd: React.FC<PipelineAddProps> = (props) => {
   const [fullPath, setFullPathValue] = useState("")
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const client = useApolloClient()
 
   const handleAdd = () => {
     const item = {
       fullPath,
     }
-    props.onAdd(item)
+    setLoading(true)
+    client
+      .query<ProjectQueryResult>({
+        query: ProjectQuery,
+        variables: { fullPath },
+      })
+      .catch(() => {})
+      .then((res) => {
+        setLoading(false)
+        if (res && res.data?.project) {
+          props.onAdd(item)
+        } else {
+          setError("Project not found")
+          setFullPathValue("")
+          setTimeout(() => {
+            setError(null)
+          }, 3000)
+        }
+        return null
+      })
   }
   return (
     <div>
-      <span>Enter FullPath to project</span>
-      <input
-        value={fullPath}
-        onChange={(ev) => setFullPathValue(ev.target.value)}
-      />
-      <button type="button" onClick={handleAdd}>
-        Add
-      </button>
+      <div>Enter FullPath to project</div>
+      <div>Hint: Everything after GitLab url</div>
+      <div>
+        <input
+          disabled={loading}
+          value={fullPath}
+          onChange={(ev) => setFullPathValue(ev.target.value)}
+        />
+        {loading ? (
+          <CircularProgress size="16px" />
+        ) : (
+          <Button emoji="✅" onClick={handleAdd}>
+            Add
+          </Button>
+        )}
+      </div>
+      {error && <div>{error}</div>}
     </div>
   )
 }
@@ -157,7 +195,7 @@ type PipelineItem = {
   addItem?: boolean
 }
 
-type PipelineList = PipelineItem[]
+export type PipelineList = PipelineItem[]
 
 type PipelinesProps = {}
 
