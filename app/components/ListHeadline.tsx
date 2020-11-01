@@ -1,6 +1,16 @@
 import React from "react"
+import styled from "styled-components"
 import useModal, { ModalTypes } from "../behaviour/useModal"
 import Button from "./common/Button"
+
+const Wrapper = styled.div`
+  display: flex;
+  align-items: center;
+
+  h1 {
+    margin-right: 8px;
+  }
+`
 
 type ListHeadlineProps = {
   label: React.ReactNode
@@ -14,8 +24,10 @@ const ListHeadline: React.FC<ListHeadlineProps> = (props) => {
   const { showModal } = useModal()
 
   return (
-    <h1>
-      {label}
+    <Wrapper>
+      <h1>
+        <span>{label}</span>
+      </h1>
       <Button
         emoji="🗑"
         className="delete-button"
@@ -31,7 +43,7 @@ const ListHeadline: React.FC<ListHeadlineProps> = (props) => {
       >
         Delete
       </Button>
-    </h1>
+    </Wrapper>
   )
 }
 

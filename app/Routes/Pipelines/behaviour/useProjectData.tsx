@@ -2,8 +2,8 @@ import { useApolloClient, useQuery } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import { remote } from "electron"
 import { useEffect, useMemo, useRef } from "react"
-import { useReadUserData } from "../../behaviour/useUserData"
-import { PROJECT_LIST_FILE_NAME } from "./Pipelines"
+import { useReadUserData } from "../../../behaviour/useUserData"
+import { PROJECT_LIST_FILE_NAME } from "../Pipelines"
 
 export const ProjectQuery = gql`
   query project($fullPath: ID!) {
@@ -19,11 +19,14 @@ export const ProjectQuery = gql`
             }
             user {
               id
+              name
+              avatarUrl
             }
             duration
             id
             status
             sha
+            finishedAt
             createdAt
           }
         }
@@ -32,6 +35,29 @@ export const ProjectQuery = gql`
   }
 `
 
+export enum PipelineStatus {
+  RUNNING = "RUNNING",
+  SUCCESS = "SUCCESS",
+  FAILED = "FAILED",
+}
+
+export type Pipeline = {
+  detailedStatus: {
+    detailsPath: string
+  }
+  user: {
+    id: string
+    name: string
+    avatarUrl: string
+  }
+  duration: number
+  id: string
+  status: PipelineStatus
+  finishedAt: string
+  sha: string
+  createdAt: string
+}
+
 export type ProjectQueryResult = {
   project: {
     id: string
@@ -39,19 +65,7 @@ export type ProjectQueryResult = {
     description: string
     pipelines: {
       edges: {
-        node: {
-          detailedStatus: {
-            detailsPath: string
-          }
-          user: {
-            id: string
-          }
-          duration: number
-          id: string
-          status: "RUNNING" | "SUCCESS" | "FAILED"
-          sha: string
-          createdAt: string
-        }
+        node: Pipeline
       }[]
     }
   }
@@ -77,7 +91,7 @@ export const useGitUser = () => {
 }
 
 export const useWatchProjects = () => {
-  const { data: userData, loading: userLoading } = useGitUser()
+  const { data: userData } = useGitUser()
 
   const currentUserIdRef = useRef<string | undefined>()
   currentUserIdRef.current = userData?.currentUser.id
@@ -87,7 +101,7 @@ export const useWatchProjects = () => {
   >({})
 
   const readUserData = useReadUserData()
-  const projectList = useMemo(() => {
+  const projectList: { fullPath: string }[] = useMemo(() => {
     return (
       readUserData({
         fileName: PROJECT_LIST_FILE_NAME,
@@ -107,7 +121,7 @@ export const useWatchProjects = () => {
               fullPath: item.fullPath,
             },
           })
-          .catch((err) => {})
+          .catch(() => {})
           .then((res) => {
             if (res) {
               const { data } = res

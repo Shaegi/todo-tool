@@ -47,7 +47,9 @@ const DoneList: React.FC<DoneListProps> = (props) => {
             {doneList.map((item) => {
               return (
                 <li key={item.name} onDoubleClick={() => onReAddItem(item)}>
-                  <span title={item.name}>👌{item.name}</span>
+                  <span title={item.name} role="img" aria-label="finished">
+                    👌{item.name}
+                  </span>
                   <Button emoji="✅" onClick={() => onReAddItem(item)} />
                 </li>
               )

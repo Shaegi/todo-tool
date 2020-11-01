@@ -1,16 +1,54 @@
 import React from "react"
+import styled, { css } from "styled-components"
+
+type StyledButtonProps = {
+  disabled: boolean
+}
+
+const StyledButton = styled.button<StyledButtonProps>`
+  padding: 4px 8px;
+  background: ${(p) => p.theme.color.prim[400]};
+  color: white;
+
+  .button-emoji {
+    padding-right: 4px;
+  }
+
+  ${(p) =>
+    p.disabled
+      ? css`
+          background: grey;
+          cursor: no-drop;
+        `
+      : css`
+          :hover {
+            opacity: 0.6;
+          }
+        `}
+`
 
 export type ButtonProps = {
   emoji?: string
+  onClick?: React.HTMLAttributes<HTMLButtonElement>["onClick"]
+  disabled?: boolean
 } & React.HTMLAttributes<HTMLButtonElement>
 
 const Button: React.FC<ButtonProps> = (props) => {
-  const { children, emoji, ...rest } = props
+  const { children, emoji, disabled, onClick, ...rest } = props
   return (
-    <button type="button" {...rest}>
-      {emoji && <span role="img">{emoji}</span>}
+    <StyledButton
+      type="button"
+      disabled={!!disabled}
+      onClick={disabled ? undefined : onClick}
+      {...rest}
+    >
+      {emoji && (
+        <span role="img" className="button-emoji">
+          {emoji}
+        </span>
+      )}
       {children}
-    </button>
+    </StyledButton>
   )
 }
 

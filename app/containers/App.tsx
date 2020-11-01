@@ -13,7 +13,7 @@ import MainNav, {
 } from "../components/MainNav"
 import { ModalContextProvider } from "../behaviour/useModal"
 import Todo from "../Routes/Todo/Todo"
-import { useWatchProjects } from "../Routes/Pipelines/useProjectData"
+import { useWatchProjects } from "../Routes/Pipelines/behaviour/useProjectData"
 
 const Main = styled.div`
   display: flex;
