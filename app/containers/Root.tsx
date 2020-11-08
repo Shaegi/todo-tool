@@ -38,6 +38,16 @@ const Global = createGlobalStyle<any>`
     background: ${(p) => (p.theme as any).color.prim[300]};
     color: white;
   }
+
+  select, input {
+    height: 30px;
+    box-sizing: border-box;
+    background: ${(p) => p.theme.color.prim[300]};
+    border: 1px solid white;
+    color: white;
+    outline-color: ${(p) => p.theme.color.prim[400]};
+    padding: 0 4px;
+  }
 `
 
 const getClient = (settings?: Settings) => {

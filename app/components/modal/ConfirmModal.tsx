@@ -2,7 +2,6 @@ import React from "react"
 import styled from "styled-components"
 import BaseModal from "./BaseModal"
 import useModal from "../../behaviour/useModal"
-import Button from "../common/Button"
 import ConfirmControls from "../ConfirmControls"
 
 const Wrapper = styled.div``
@@ -31,7 +30,11 @@ const ConfirmModal: React.FC<ConfirmModalProps> = (props) => {
     <BaseModal onClose={handleCancel} showClose={false}>
       <Wrapper>
         <span className="message"> {message ?? "Confirm?"} </span>
-        <ConfirmControls onConfirm={handleConfirm} onDecline={handleCancel} />
+        <ConfirmControls
+          onConfirm={handleConfirm}
+          onDecline={handleCancel}
+          inline
+        />
       </Wrapper>
     </BaseModal>
   )

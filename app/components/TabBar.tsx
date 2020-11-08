@@ -21,11 +21,12 @@ export type TabBarItem = Omit<SideBarItem, "active"> & {
 
 type TabBarProps = {
   items: TabBarItem[]
+  onActiveChange?: (nextActiveIndex: number) => void
   initialActiveIndex?: number
 }
 
 const TabBar = forwardRef<TabBarRef, TabBarProps>((props, ref) => {
-  const { initialActiveIndex = 0, items } = props
+  const { initialActiveIndex = 0, items, onActiveChange } = props
   const [active, setActive] = useState<number>(initialActiveIndex)
 
   useImperativeHandle(ref, () => ({
@@ -38,6 +39,7 @@ const TabBar = forwardRef<TabBarRef, TabBarProps>((props, ref) => {
       active: index === active,
       onClick: (e: React.MouseEvent) => {
         setActive(index)
+        onActiveChange?.(index)
         i.onClick && i.onClick(e)
       },
     }))

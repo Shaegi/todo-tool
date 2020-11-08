@@ -2,10 +2,23 @@ import { useApolloClient } from "@apollo/client"
 /* eslint-disable promise/catch-or-return */
 import { CircularProgress } from "@material-ui/core"
 import React, { useState } from "react"
+import styled from "styled-components"
 import { v4 } from "uuid"
 import Button from "../../../components/common/Button"
 import { ProjectQuery, ProjectQueryResult } from "../behaviour/useProjectData"
 import { PipelineItem } from "../Pipelines"
+
+const Wrapper = styled.div`
+  padding: 0 16px;
+
+  .input-wrapper {
+    margin-bottom: 8px;
+  }
+
+  .path-input {
+    margin-right: 8px;
+  }
+`
 
 type PipelineAddProps = {
   onAdd: (item: PipelineItem) => void
@@ -45,25 +58,29 @@ const PipelineAdd: React.FC<PipelineAddProps> = (props) => {
       })
   }
   return (
-    <div>
-      <div>Enter FullPath to project</div>
-      <div>Hint: Everything after GitLab url</div>
+    <Wrapper>
       <div>
-        <input
-          disabled={loading}
-          value={fullPath}
-          onChange={(ev) => setFullPathValue(ev.target.value)}
-        />
-        {loading ? (
-          <CircularProgress size="16px" />
-        ) : (
-          <Button emoji="✔️" onClick={handleAdd} disabled={!fullPath}>
-            Add
-          </Button>
-        )}
+        <h1>Add Pipeline</h1>
+        <div className="input-wrapper">
+          <input
+            disabled={loading}
+            className="path-input"
+            placeholder="Enter Full Path to project"
+            value={fullPath}
+            onChange={(ev) => setFullPathValue(ev.target.value)}
+          />
+          {loading ? (
+            <CircularProgress size="16px" />
+          ) : (
+            <Button emoji="✔️" onClick={handleAdd} disabled={!fullPath}>
+              Add
+            </Button>
+          )}
+        </div>
+        <div>Hint: Everything after GitLab url</div>
       </div>
       {error && <div>{error}</div>}
-    </div>
+    </Wrapper>
   )
 }
 

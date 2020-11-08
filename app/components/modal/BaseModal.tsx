@@ -34,7 +34,7 @@ export type BaseModalProps = {
 const BaseModal: React.FC<BaseModalProps> = (props) => {
   const { showClose = true } = props
   return (
-    <Wrapper onClick={props.onClose}>
+    <Wrapper onClick={props.onClose} className="base-model-wrapper">
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         {showClose && (
           <button

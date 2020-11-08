@@ -1,9 +1,10 @@
-import React, { useCallback, useMemo } from "react"
+import React, { useCallback, useMemo, useState } from "react"
 import { useReadUserData, useWriteUserData } from "../../behaviour/useUserData"
 import TabBar, { TabBarItem } from "../../components/TabBar"
 import PipelineAdd from "./components/PipelineAdd"
 import PipelineSidebarItem from "./components/PipelineSidebarItem"
 import Pipeline from "./components/Pipeline/Pipeline"
+import SidebarAddItem from "../../components/SidebarAddItem"
 
 export const PROJECT_LIST_FILE_NAME = "projectList"
 
@@ -66,16 +67,13 @@ const Pipelines: React.FC<PipelinesProps> = () => {
       })
     }
   }, [])
+  const [active, setActive] = useState(projectList.length === 0 ? 0 : 1)
 
   const sidebarItems = useMemo<TabBarItem[]>(() => {
     return [
       {
         key: "add-item",
-        Renderer: (
-          <div>
-            <div>Add</div>
-          </div>
-        ),
+        Renderer: <SidebarAddItem active={active === 0} />,
         ContentRenderer: <PipelineAdd onAdd={handleAddItem} />,
       },
       ...projectList.map((item, index) => {
@@ -96,13 +94,14 @@ const Pipelines: React.FC<PipelinesProps> = () => {
         }
       }),
     ]
-  }, [projectList])
+  }, [projectList, active])
 
   return (
     <div style={{ display: "flex", width: "100%" }}>
       <TabBar
         items={sidebarItems}
-        initialActiveIndex={sidebarItems.length === 1 ? 0 : 1}
+        onActiveChange={setActive}
+        initialActiveIndex={active}
       />
     </div>
   )

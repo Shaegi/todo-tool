@@ -1,28 +1,33 @@
 import React from "react"
 import styled from "styled-components"
+import Button from "./common/Button"
 
 const Wrapper = styled.span``
 
 type ConfirmControlsProps = {
+  disabled?: boolean
+  inline?: boolean
   onConfirm: () => void
   onDecline: () => void
 }
 
 const ConfirmControls: React.FC<ConfirmControlsProps> = (props) => {
-  const { onConfirm, onDecline } = props
+  const { onConfirm, onDecline, disabled, inline } = props
 
   return (
     <Wrapper className="confirm-controls">
-      <button type="button" onClick={onConfirm}>
-        <span role="img" aria-label="accept">
-          ✔️
-        </span>
-      </button>
-      <button type="button" onClick={onDecline}>
-        <span role="img" aria-label="decline">
-          ❌
-        </span>
-      </button>
+      <Button
+        onClick={onConfirm}
+        disabled={disabled}
+        emoji="✔️"
+        inline={inline}
+      />
+      <Button
+        onClick={onDecline}
+        disabled={disabled}
+        emoji="❌"
+        inline={inline}
+      />
     </Wrapper>
   )
 }

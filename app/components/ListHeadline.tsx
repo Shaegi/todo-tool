@@ -11,6 +11,10 @@ const Wrapper = styled.div`
   h1 {
     margin-right: 8px;
   }
+
+  .delete-button {
+    background: ${(p) => p.theme.color.error[500]};
+  }
 `
 
 type ListHeadlineProps = {

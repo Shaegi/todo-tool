@@ -1,5 +1,6 @@
 import React from "react"
 import styled from "styled-components"
+import classNames from "classnames"
 
 const StyledSidebar = styled.nav`
   width: 100px;
@@ -51,7 +52,14 @@ const Sidebar: React.FC<SideBarProps> = ({ items }) => {
       <ul>
         {items.map(({ key, active, Renderer, onClick }) => {
           return (
-            <SidebarItem key={key} active={active} onClick={onClick}>
+            <SidebarItem
+              key={key}
+              active={active}
+              className={classNames("sidebar-item", {
+                "sidebar-item--active": active,
+              })}
+              onClick={onClick}
+            >
               {Renderer}
             </SidebarItem>
           )

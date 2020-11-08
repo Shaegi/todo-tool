@@ -7,6 +7,7 @@ import EmojiSelect from "../../components/EmojiSelect"
 import List from "./components/List"
 import ConfirmControls from "../../components/ConfirmControls"
 import ListHeadline from "../../components/ListHeadline"
+import SidebarAddItem from "../../components/SidebarAddItem"
 
 export const TODO_LIST_PATH = "todoList"
 
@@ -66,24 +67,16 @@ const Todo: React.FC<TodoProps> = () => {
       return next
     })
   }
+  const [active, setActive] = useState(list.length === 0 ? 0 : 1)
 
   const sidebarItems = useMemo<TabBarItem[]>(() => {
     return [
       {
         key: "add-item",
-        Renderer: (
-          <div>
-            <div>Add</div>
-          </div>
-        ),
+        Renderer: <SidebarAddItem active={active === 0} />,
         ContentRenderer: <AddItemContent onAdd={handleAdd} />,
       },
       ...list.map((item) => {
-        const headlineLabel = (
-          <span>
-            {item.icon} {item.label}
-          </span>
-        )
         return {
           key: item.id,
           ContentRenderer: (
@@ -106,14 +99,15 @@ const Todo: React.FC<TodoProps> = () => {
         }
       }),
     ]
-  }, [list])
+  }, [list, active])
 
   return (
     <Wrapper className="todo-view">
       <TabBar
+        onActiveChange={setActive}
         ref={tabBarRef}
         items={sidebarItems}
-        initialActiveIndex={sidebarItems.length === 1 ? 0 : 1}
+        initialActiveIndex={active}
       />
     </Wrapper>
   )
@@ -144,10 +138,14 @@ const AddItemContent: React.FC<AddItemContentProps> = (props) => {
 
   return (
     <div>
-      Add new Todo List!
+      <h1>Add Todo List</h1>
       <input value={label} onChange={(e) => setLabel(e.target.value)} />
       <EmojiSelect onChange={(e) => setEmoji(e.target.value)} />
-      <ConfirmControls onConfirm={handleAdd} onDecline={handleCancel} />
+      <ConfirmControls
+        onConfirm={handleAdd}
+        onDecline={handleCancel}
+        disabled={!label}
+      />
     </div>
   )
 }

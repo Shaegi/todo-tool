@@ -1,7 +1,8 @@
-import React, { useState } from "react"
+import React, { useCallback, useState } from "react"
 import styled from "styled-components"
 import { shell } from "electron"
 import useSettings from "../../../behaviour/useSettings"
+import Button from "../../../components/common/Button"
 
 const Wrapper = styled.div`
   input {
@@ -39,10 +40,16 @@ const JiraInput: React.FC<JiraInputProps> = () => {
     settings: { jiraBoard, jira, jiraTicketPrefix, jiraDashboard },
   } = useSettings()
 
-  const handleKeyDown = (ev: any) => {
-    if (ev.which === 13) {
+  const openTicket = useCallback(() => {
+    if (value) {
       setValue("")
       shell.openExternal(`${jira}${jiraTicketPrefix}${value}`)
+    }
+  }, [jira, jiraTicketPrefix, value])
+
+  const handleKeyDown = (ev: any) => {
+    if (ev.which === 13) {
+      openTicket()
     }
   }
 
@@ -63,7 +70,13 @@ const JiraInput: React.FC<JiraInputProps> = () => {
           Open Board
         </button>
       </div>
-      <input onKeyDown={handleKeyDown} onChange={handleChange} value={value} />
+      <input
+        onKeyDown={handleKeyDown}
+        onChange={handleChange}
+        value={value}
+        placeholder="Enter Ticket No."
+      />
+      <Button onClick={openTicket}>Search</Button>
     </Wrapper>
   )
 }

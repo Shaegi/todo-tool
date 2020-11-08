@@ -143,7 +143,6 @@ export const useWatchProjects = () => {
 
   useEffect(() => {
     const fetch = () => {
-      console.log("fetch!")
       projectList.forEach((item) => {
         client
           .query<ProjectQueryResult>({
@@ -156,7 +155,6 @@ export const useWatchProjects = () => {
           .catch(() => {})
           .then((res) => {
             if (res) {
-              console.log(prevPendingPipelinesRef.current[item.fullPath])
               const { data } = res
               if (currentUserIdRef.current && item.fullPath) {
                 prevPendingPipelinesRef.current[item.fullPath]?.forEach(
