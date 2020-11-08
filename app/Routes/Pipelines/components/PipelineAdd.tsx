@@ -1,7 +1,8 @@
+import { useApolloClient } from "@apollo/client"
 /* eslint-disable promise/catch-or-return */
-import { useApolloClient } from "@apollo/react-hooks"
 import { CircularProgress } from "@material-ui/core"
 import React, { useState } from "react"
+import { v4 } from "uuid"
 import Button from "../../../components/common/Button"
 import { ProjectQuery, ProjectQueryResult } from "../behaviour/useProjectData"
 import { PipelineItem } from "../Pipelines"
@@ -19,6 +20,7 @@ const PipelineAdd: React.FC<PipelineAddProps> = (props) => {
   const handleAdd = () => {
     const item = {
       fullPath,
+      id: v4(),
     }
     setLoading(true)
 

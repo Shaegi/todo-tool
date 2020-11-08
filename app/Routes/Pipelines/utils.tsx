@@ -3,7 +3,7 @@ import { PipelineStatus, StageStatus } from "./behaviour/useProjectData"
 /* eslint-disable import/prefer-default-export */
 export const getIconByFailedCount = (count: number) => {
   if (count === 0) {
-    return "✅"
+    return "💯"
   }
   if (count > 8) {
     return "❌"
@@ -11,7 +11,7 @@ export const getIconByFailedCount = (count: number) => {
   if (count > 5) {
     return "〽️"
   }
-  return ""
+  return "✅"
 }
 
 export const pipelineStatusEmojiMap: Record<PipelineStatus, string> = {
@@ -26,4 +26,6 @@ export const stageStatusToEmojiMap: Record<StageStatus, string> = {
   [StageStatus.FAILED]: "❌",
   [StageStatus.SUCCESS]: "✔️",
   [StageStatus.SKIPPED]: "⏩",
+  [StageStatus.CREATED]: "🔜",
+  [StageStatus.CANCELED]: "🚫",
 }

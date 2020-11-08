@@ -3,7 +3,11 @@ import { shell } from "electron"
 import styled from "styled-components"
 import classNames from "classnames"
 import useSettings from "../../../../behaviour/useSettings"
-import { Pipeline, useGitUser } from "../../behaviour/useProjectData"
+import {
+  Pipeline,
+  PipelineStatus,
+  useGitUser,
+} from "../../behaviour/useProjectData"
 import Stages from "./Stages"
 import { pipelineStatusEmojiMap } from "../../utils"
 
@@ -63,7 +67,7 @@ const PipelineListItem: React.FC<PipelineListItemProps> = (props) => {
 
   const resolvedDuration = useMemo(() => {
     const minutes = Math.floor(duration / 60)
-    const seconds = duration - minutes * 60
+    const seconds = Math.floor(duration - minutes * 60)
     return `🕒 ${minutes}:${seconds > 10 ? seconds : `0${seconds}`}`
   }, [duration])
 
@@ -81,17 +85,17 @@ const PipelineListItem: React.FC<PipelineListItemProps> = (props) => {
           const days = Math.floor(secSince / 60 / 60 / 24)
 
           if (days > 0) {
-            return `${days} days ago`
+            return `${days} day(s) ago`
           }
           const hours = Math.floor(secSince / 60 / 60)
           if (hours > 0) {
-            return `${hours} hours ago`
+            return `${hours} hour(s) ago`
           }
           const minutes = Math.floor(secSince / 60)
           if (minutes > 0) {
-            return `${minutes} minutes ago`
+            return `${minutes} minute(s) ago`
           }
-          return `${secSince} seconds ago`
+          return `${Math.floor(secSince)} seconds ago`
         })()
         setFinishedAgo(refreshed)
       }
@@ -118,7 +122,9 @@ const PipelineListItem: React.FC<PipelineListItemProps> = (props) => {
         >
           {pipelineStatusEmojiMap[status]}
         </div>
-        <div className="duration">{resolvedDuration}</div>
+        {status !== PipelineStatus.RUNNING && (
+          <div className="duration">{resolvedDuration}</div>
+        )}
         <Stages stages={pipeline.stages.edges} />
         <div className="user">
           <img
@@ -133,6 +139,7 @@ const PipelineListItem: React.FC<PipelineListItemProps> = (props) => {
                 className="active-user-indicator"
                 role="img"
                 aria-label="active user"
+                title="Thats you!"
               >
                 👋
               </span>

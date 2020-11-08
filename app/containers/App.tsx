@@ -18,7 +18,8 @@ import { useWatchProjects } from "../Routes/Pipelines/behaviour/useProjectData"
 const Main = styled.div`
   display: flex;
   position: relative;
-  height: 100vh;
+  max-height: 100%;
+  overflow: hidden;
 `
 
 export default function App() {

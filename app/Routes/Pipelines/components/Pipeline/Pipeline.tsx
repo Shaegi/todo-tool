@@ -1,7 +1,10 @@
 import React, { useCallback, useMemo, useState } from "react"
 import styled from "styled-components"
 import ListHeadline from "../../../../components/ListHeadline"
-import PipelineFilter, { PipelineFilterProps } from "./PipelineFilter"
+import PipelineFilter, {
+  FilterItem,
+  PipelineFilterProps,
+} from "./PipelineFilter"
 import PipelineListItem, { pipelineListItemClass } from "./PipelineListIem"
 import {
   PipelineStatus,
@@ -36,25 +39,31 @@ const StyledPipeline = styled.ul`
   }
 `
 type PipelineProps = {
+  id: string
   fullPath: string | null
+  label?: string
+  onDelete: (id: string) => void
+  onEditLabel: (id: string, newLabel: string) => void
 }
 
 const pipelineStatusFilterItems = (Object.keys(
   PipelineStatus
 ) as PipelineStatus[]).map((status) => ({
   value: status,
+  title: status[0] + status.substr(1, status.length).toLowerCase(),
   label: pipelineStatusEmojiMap[status],
 }))
 
-const userFilterItems = [
+const userFilterItems: FilterItem[] = [
   {
     value: "activeUser",
     label: "👋",
+    title: "Triggered by myself",
   },
 ]
 
 const Pipeline: React.FC<PipelineProps> = (props) => {
-  const { fullPath } = props
+  const { fullPath, id, onDelete, label, onEditLabel } = props
   const { data, loading } = useProjectData(fullPath)
   const [statusFilter, setStatusFilter] = useState<
     PipelineFilterProps["value"]
@@ -77,6 +86,10 @@ const Pipeline: React.FC<PipelineProps> = (props) => {
     []
   )
 
+  const handleDeletePipeline = useCallback(() => {
+    onDelete(id)
+  }, [id])
+
   const { data: user } = useGitUser()
 
   const resolvedPipelines = useMemo(() => {
@@ -90,6 +103,13 @@ const Pipeline: React.FC<PipelineProps> = (props) => {
     return []
   }, [data, statusFilter, userFilter])
 
+  const handleEditLabel = useCallback(
+    (newLabel: string) => {
+      onEditLabel(id, newLabel)
+    },
+    [id, onEditLabel]
+  )
+
   if (loading) {
     return <div>Loading</div>
   }
@@ -101,7 +121,11 @@ const Pipeline: React.FC<PipelineProps> = (props) => {
 
   return (
     <StyledPipeline>
-      <ListHeadline label={name} onDelete={() => null} />
+      <ListHeadline
+        label={label || name}
+        onDelete={handleDeletePipeline}
+        onEditLabel={handleEditLabel}
+      />
       <div className="filter">
         <div className="filter-label">Filter</div>
         <div>

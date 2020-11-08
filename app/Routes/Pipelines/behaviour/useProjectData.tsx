@@ -1,5 +1,4 @@
-import { useApolloClient, useQuery } from "@apollo/react-hooks"
-import { gql } from "apollo-boost"
+import { gql, useApolloClient, useQuery } from "@apollo/client"
 import { remote } from "electron"
 import { useEffect, useMemo, useRef } from "react"
 import { useReadUserData } from "../../../behaviour/useUserData"
@@ -57,6 +56,8 @@ export enum StageStatus {
   SUCCESS = "success",
   SKIPPED = "skipped",
   FAILED = "failed",
+  CREATED = "created",
+  CANCELED = "canceled",
 }
 
 export type PipelineStage = {
@@ -124,7 +125,7 @@ export const useWatchProjects = () => {
   const { data: userData } = useGitUser()
 
   const currentUserIdRef = useRef<string | undefined>()
-  currentUserIdRef.current = userData?.currentUser.id
+  currentUserIdRef.current = userData?.currentUser?.id
 
   const prevPendingPipelinesRef = useRef<
     Record<string, ProjectQueryResult["project"]["pipelines"]["edges"]>
@@ -142,6 +143,7 @@ export const useWatchProjects = () => {
 
   useEffect(() => {
     const fetch = () => {
+      console.log("fetch!")
       projectList.forEach((item) => {
         client
           .query<ProjectQueryResult>({
@@ -154,6 +156,7 @@ export const useWatchProjects = () => {
           .catch(() => {})
           .then((res) => {
             if (res) {
+              console.log(prevPendingPipelinesRef.current[item.fullPath])
               const { data } = res
               if (currentUserIdRef.current && item.fullPath) {
                 prevPendingPipelinesRef.current[item.fullPath]?.forEach(
@@ -190,7 +193,7 @@ export const useWatchProjects = () => {
           })
       })
     }
-    setInterval(fetch, 30000)
+    setInterval(fetch, 10000)
     fetch()
   }, [])
 }

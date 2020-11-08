@@ -23,9 +23,11 @@ const stageNameToEmojiMap: Record<string, string> = {
   publish: "📡",
   build: "👷",
   codequality: "🧫",
+  test: "⚗️",
   skipped: "⏩",
   deploy: "🚀",
   external: "🛰",
+  validate: "🔬",
 }
 
 export type StagesProps = {

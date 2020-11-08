@@ -24,6 +24,7 @@ const Wrapper = styled.div`
 export type FilterItem = {
   label: string
   value: string
+  title?: string
 }
 
 export type PipelineFilterProps = {
@@ -54,6 +55,7 @@ const PipelineFilter: React.FC<PipelineFilterProps> = (props) => {
             className={classNames("filter-item", {
               "filter-item--active": item.value === value?.value,
             })}
+            title={item.title}
             key={item.value}
           >
             {item.label}

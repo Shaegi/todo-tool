@@ -89,7 +89,7 @@ const Todo: React.FC<TodoProps> = () => {
           ContentRenderer: (
             <div className="content" key={item.id}>
               <ListHeadline
-                label={headlineLabel}
+                label={item.label}
                 onDelete={() => deleteItem(item)}
               />
               <List headline={item.label} id={item.id} />

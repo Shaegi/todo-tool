@@ -4,6 +4,10 @@ import styled from "styled-components"
 const StyledSidebar = styled.nav`
   width: 100px;
   height: 100%;
+  > ul {
+    max-height: 100%;
+    overflow: auto;
+  }
 `
 
 type SidebarItemProps = {

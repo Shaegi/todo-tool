@@ -8,6 +8,13 @@ body {
   margin: 0;
 }
 
+#root {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  overflow: hidden;
+}
+
 button {
   background: none;
   cursor: pointer;
