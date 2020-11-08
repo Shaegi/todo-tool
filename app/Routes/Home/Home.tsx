@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import styled from "styled-components"
-import SectionList from "../../components/SectionList"
+import SectionList from "./components/SectionList/SectionList"
 import JiraInput from "./components/JiraInput"
 
 const Wrapper = styled.div`
