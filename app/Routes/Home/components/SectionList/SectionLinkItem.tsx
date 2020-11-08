@@ -37,7 +37,15 @@ const SectionLinkItem: React.FC<SectionLinkItemProps> = (props) => {
     }),
   })
 
-  const [, dropRef] = useDrop({
+  const [, dropRef] = useDrop<
+    {
+      type: string
+      item: SectionItem
+      index: number
+    },
+    any,
+    any
+  >({
     accept: DragType,
     hover(item, monitor) {
       if (!ref.current) {
