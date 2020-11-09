@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useContext } from "react"
 import ConfirmModal from "../components/modal/ConfirmModal"
+import AddLinkModal from "../Routes/Home/components/SectionList/AddLinkModal"
 
 type ModalContextValue = {
   openModal: ModalState | null
@@ -15,12 +16,15 @@ const ModalContext = React.createContext<ModalContextValue>({
 
 export enum ModalTypes {
   CONFIRM = "CONFIRM",
+  ADD_SECTION_LINK = "ADD_SECTION_LINK",
 }
 
 const getModalFromType = (type: ModalTypes) => {
   switch (type) {
     case ModalTypes.CONFIRM:
       return ConfirmModal
+    case ModalTypes.ADD_SECTION_LINK:
+      return AddLinkModal
     default:
       return null
   }

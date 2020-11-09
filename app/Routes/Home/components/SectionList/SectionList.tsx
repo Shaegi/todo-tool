@@ -3,9 +3,8 @@ import styled from "styled-components"
 import { shell } from "electron"
 import useModal, { ModalTypes } from "../../../../behaviour/useModal"
 import AddSectionInput from "./AddSectionInput"
-import AddLinkInput from "./AddLinkInput"
 import useSectionListData from "./behaviour/useSectionListData"
-import Section from "./Section"
+import Section, { SectionProps } from "./Section"
 import SectionLinkItem, { SectionLinkItemProps } from "./SectionLinkItem"
 
 const Wrapper = styled.div`
@@ -13,6 +12,32 @@ const Wrapper = styled.div`
   flex-direction: column;
   flex-wrap: wrap;
   max-height: 71vh;
+
+  .section {
+    .edit-controls {
+      display: flex;
+      flex-shrink: 0;
+      height: 30px;
+      align-items: center;
+      .drag-handle {
+        color: white;
+      }
+      .delete-button {
+        color: white;
+        font-size: 0.8em;
+      }
+
+      .add-link {
+        color: white;
+        height: 25px;
+        width: 25px;
+        background: ${(p) => p.theme.color.green[500]};
+        :hover {
+          background: ${(p) => p.theme.color.green[400]};
+        }
+      }
+    }
+  }
 
   .section h2 {
     margin-top: 0;
@@ -22,29 +47,30 @@ const Wrapper = styled.div`
   }
 
   ul {
-    li > button {
-      display: block;
+    li > .button-wrapper {
+      display: flex;
+      align-items: center;
+      height: 50px;
+      justify-content: space-between;
+      button {
+        color: white;
+        font-weight: 600;
+        font-size: 1.1em;
+        height: 100%;
+
+        &.link-button {
+          flex-grow: 1;
+        }
+
+        :hover {
+          background: white;
+          color: ${(p) => p.theme.color.prim[300]};
+        }
+      }
       margin-bottom: 16px;
-      color: white;
-      padding: 10px 20px;
       border: 1px solid white;
-      width: 80%;
-      font-weight: 600;
-      font-size: 1.1em;
-
-      button:last-of-type {
-        margin-bottom: 0;
-      }
-
-      &:hover {
-        background: white;
-        color: ${(p) => p.theme.color.prim[300]};
-      }
+      width: 200px;
     }
-  }
-  .delete-button {
-    color: white;
-    font-size: 1em;
   }
 `
 
@@ -70,8 +96,6 @@ const SectionList: React.FC<SectionListProps> = (props) => {
   const { editMode = true } = props
 
   const { sectionList, persistSectionList } = useSectionListData()
-  const [hoveredItem, setHoveredItem] = React.useState<string | null>(null)
-  const [activeSection, setActiveSection] = React.useState<string | null>(null)
   const { showModal } = useModal()
 
   const handleLink = (item: SectionItem) => {
@@ -151,25 +175,32 @@ const SectionList: React.FC<SectionListProps> = (props) => {
     []
   )
 
+  const handleChangeSectionIndex: SectionProps["onChangeIndex"] = React.useCallback(
+    (currIndex, nextIndex) => {
+      persistSectionList((prev) => {
+        const currSection = prev[currIndex]
+        const next = [...prev].filter((s) => s.id !== currSection.id)
+        next.splice(nextIndex, 0, currSection)
+        return next
+      })
+    },
+    []
+  )
+
   return (
     <Wrapper>
       {editMode && <AddSectionInput onAdd={handleAddSection} />}
-      {sectionList.map((section) => {
+      {sectionList.map((section, index) => {
         return (
           <Section
+            index={index}
             key={section.id}
             section={section}
             editMode={editMode}
+            onAddLink={handleAddLink}
+            onChangeIndex={handleChangeSectionIndex}
             onDeleteSection={handleDeleteSection}
           >
-            {editMode && (
-              <AddLinkInput
-                active={section.id === activeSection}
-                onActivate={(section) => setActiveSection(section.id)}
-                section={section}
-                onAdd={handleAddLink}
-              />
-            )}
             {section.items.map((item, index) => {
               return (
                 <SectionLinkItem
