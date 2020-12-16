@@ -11,6 +11,7 @@ export type Settings = {
   git?: string
   gitAPI?: string
   gitAPIKey?: string
+  timerDefault?: number
   jira?: string
   jiraDashboard?: string
   jiraBoard?: string

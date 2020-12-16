@@ -7,6 +7,9 @@
     ".dockerignore": "ignore",
     ".eslintignore": "ignore"
   },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
 
   "javascript.validate.enable": false,
   "javascript.format.enable": false,

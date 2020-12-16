@@ -1,17 +1,21 @@
 import React from "react"
 import { Link, useRouteMatch } from "react-router-dom"
+import useStandUpTimer from "../behaviour/useStandUpTimer"
 import Sidebar from "./Sidebar"
 
 export const HOME_PATH = "/"
 export const PIPELINE_PATH = "/pipeline"
 export const SETTINGS_PATH = "/settings"
+export const STANDUP_TIMER_PATH = "/standup-timer"
 export const TODO_PATH = "/todo"
 
 const MainNav = () => {
   const isHome = useRouteMatch(HOME_PATH)
   const isPipeline = useRouteMatch(PIPELINE_PATH)
   const isSettings = useRouteMatch(SETTINGS_PATH)
+  const isStandUpTimer = useRouteMatch(STANDUP_TIMER_PATH)
   const isTodo = useRouteMatch(TODO_PATH)
+  const { timer } = useStandUpTimer()
 
   const mainNavItems = [
     {
@@ -50,7 +54,6 @@ const MainNav = () => {
         </Link>
       ),
     },
-
     {
       key: SETTINGS_PATH,
       active: !!isSettings,
@@ -59,6 +62,18 @@ const MainNav = () => {
           <div>
             ⚙️ <br />
             Settings
+          </div>
+        </Link>
+      ),
+    },
+    {
+      key: STANDUP_TIMER_PATH,
+      active: !!isStandUpTimer,
+      Renderer: (
+        <Link to={STANDUP_TIMER_PATH}>
+          <div>
+            {timer.formatted} <br />
+            Timer
           </div>
         </Link>
       ),
