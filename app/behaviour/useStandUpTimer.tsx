@@ -1,4 +1,3 @@
-import { clearConfigCache } from "prettier"
 import React, {
   useState,
   useCallback,
@@ -68,7 +67,6 @@ export const StandUpTimerContextProvider: React.FC<{}> = (props) => {
   }, [timerDefault])
 
   const formattedTimer = useMemo(() => {
-    console.log("format", timer)
     const minutes = Math.floor(timer / 1000 / 60)
     const seconds = Math.floor((timer - minutes * 1000 * 60) / 1000)
 
