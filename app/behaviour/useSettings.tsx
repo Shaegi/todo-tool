@@ -27,7 +27,7 @@ export const SettingsContextProvider: React.FC = (props) => {
   const readUserData = useReadUserData()
   const writeUserData = useWriteUserData()
   const [settings, setSettings] = useState<Settings>(
-    readUserData({ fileName: SETTINGS_FILE_NAME })
+    readUserData({ fileName: SETTINGS_FILE_NAME }) || {}
   )
 
   const persistSettings: SettingsContext["persistSettings"] = useCallback(
