@@ -1,6 +1,7 @@
 import React from "react"
 import { Link, useRouteMatch } from "react-router-dom"
 import useStandUpTimer from "../behaviour/useStandUpTimer"
+import FlashingText from "./FlashingText"
 import Sidebar from "./Sidebar"
 
 export const HOME_PATH = "/"
@@ -15,7 +16,12 @@ const MainNav = () => {
   const isSettings = useRouteMatch(SETTINGS_PATH)
   const isStandUpTimer = useRouteMatch(STANDUP_TIMER_PATH)
   const isTodo = useRouteMatch(TODO_PATH)
-  const { timer } = useStandUpTimer()
+  const {
+    timer,
+    finished: timerFinished,
+    running: timerRunning,
+    setUnfinished: setTimerUnfinished,
+  } = useStandUpTimer()
 
   const mainNavItems = [
     {
@@ -70,10 +76,23 @@ const MainNav = () => {
       key: STANDUP_TIMER_PATH,
       active: !!isStandUpTimer,
       Renderer: (
-        <Link to={STANDUP_TIMER_PATH}>
+        <Link
+          to={STANDUP_TIMER_PATH}
+          onClick={() => {
+            setTimerUnfinished()
+          }}
+        >
           <div>
-            {timer.formatted} <br />
-            Timer
+            <div>
+              {(timerRunning || timerFinished) && (
+                <div>
+                  <FlashingText flashing={timerFinished}>
+                    {timer.formatted}
+                  </FlashingText>
+                </div>
+              )}
+              Timer
+            </div>
           </div>
         </Link>
       ),

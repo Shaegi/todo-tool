@@ -14,6 +14,8 @@ import path from "path"
 import { app, BrowserWindow } from "electron"
 import { autoUpdater } from "electron-updater"
 import log from "electron-log"
+
+app.setAppUserModelId("Todo-Tool")
 // import MenuBuilder from './menu';
 
 export default class AppUpdater {

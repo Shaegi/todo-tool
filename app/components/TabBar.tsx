@@ -49,7 +49,7 @@ const TabBar = forwardRef<TabBarRef, TabBarProps>((props, ref) => {
 
   return (
     <Wrapper>
-      <Sidebar items={resolvedItems} />
+      {items.length > 1 && <Sidebar items={resolvedItems} />}
       <>{activeItem && activeItem.ContentRenderer}</>
     </Wrapper>
   )

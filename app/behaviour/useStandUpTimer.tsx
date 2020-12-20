@@ -1,3 +1,4 @@
+import { remote } from "electron"
 import React, {
   useState,
   useCallback,
@@ -15,9 +16,11 @@ type StandUpTimerContext = {
     seconds: string
   }
   running: boolean
+  finished: boolean
   resetTimer: () => void
   startTimer: () => void
   pauseTimer: () => void
+  setUnfinished: () => void
   setNewDefault: (minutes: string, seconds: string) => void
 }
 
@@ -33,19 +36,49 @@ export const StandUpTimerContextProvider: React.FC<{}> = (props) => {
     settings: { timerDefault = timerDefaultFallback },
     persistSettings,
   } = useSettings()
+
   const [running, setRunning] = useState(true)
   const [timer, setTimer] = useState<number>(timerDefault)
+  const [finished, setFinished] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const handleLastTick = useCallback(() => {
+    setFinished((p) => {
+      if (!p) {
+        const notification = new remote.Notification({
+          title: "Timer finished!",
+          body: `Your timer has finished`,
+        })
+        notification.show()
+        notification.on("click", () => {
+          setFinished(false)
+        })
+      }
+      return true
+    })
+
+    setRunning(false)
+  }, [])
 
   useEffect(() => {
     if (running) {
       timerRef.current = setInterval(() => {
-        setTimer((p) => p - 1000)
+        setTimer((p) => {
+          const next = p - 1000
+          if (next <= 0) {
+            handleLastTick()
+          }
+          return next
+        })
       }, 1000)
     } else if (timerRef.current) {
       clearInterval(timerRef.current)
     }
   }, [running])
+
+  const setUnfinished = useCallback(() => {
+    setFinished(false)
+  }, [])
 
   const setNewDefault = useCallback((minutes: string, seconds: string) => {
     const defaultTimer = Number(minutes) * 60 * 1000 + Number(seconds) * 1000
@@ -58,11 +91,16 @@ export const StandUpTimerContextProvider: React.FC<{}> = (props) => {
   }, [])
 
   const startTimer = useCallback(() => {
+    if (finished) {
+      setTimer(timerDefault)
+    }
     setRunning(true)
-  }, [])
+    setFinished(false)
+  }, [finished])
 
   const resetTimer = useCallback(() => {
     pauseTimer()
+    setFinished(false)
     setTimer(timerDefault)
   }, [timerDefault])
 
@@ -85,6 +123,8 @@ export const StandUpTimerContextProvider: React.FC<{}> = (props) => {
         resetTimer,
         pauseTimer,
         running,
+        finished,
+        setUnfinished,
         startTimer,
         setNewDefault,
         timer: formattedTimer,

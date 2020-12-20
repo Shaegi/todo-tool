@@ -52,8 +52,8 @@
     ]
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.develar.ElectronReact",
+    "productName": "TodoTool",
+    "appId": "org.develar.TodoTool",
     "files": [
       "dist/",
       "node_modules/",

@@ -17,7 +17,7 @@ type SidebarItemProps = {
 
 const SidebarItem = styled.li<SidebarItemProps>`
   a,
-  div {
+  > div {
     cursor: pointer;
     color: white;
     text-decoration: none;
