@@ -4,9 +4,14 @@ import { v4 } from "uuid"
 import useModal from "../../../../behaviour/useModal"
 import ConfirmControls from "../../../../components/ConfirmControls"
 import BaseModal from "../../../../components/modal/BaseModal"
+import MultiInput from "./MultiInput"
 import { LinkSection, SectionItem } from "./SectionList"
 
-const Wrapper = styled.div``
+const Wrapper = styled.div`
+  label {
+    display: block;
+  }
+`
 
 export type AddLinkModalProps = {
   section: LinkSection
@@ -18,15 +23,15 @@ const AddLinkModal: React.FC<AddLinkModalProps> = (props) => {
   const { onAbort, onConfirm, section } = props
   const { hideModal } = useModal()
 
-  const [addLinkURLValue, setAddLinkURLValue] = React.useState<string>("")
+  const [addLinkURLValue, setAddLinkURLValue] = React.useState<string[]>([""])
   const [addLinkLabelValue, setAddLinkLabelValue] = React.useState<string>("")
 
   const handleConfirm = () => {
     hideModal()
     onConfirm({
       id: v4(),
-      url: addLinkURLValue,
       label: addLinkLabelValue,
+      urls: addLinkURLValue.filter(Boolean),
     })
   }
 
@@ -39,17 +44,24 @@ const AddLinkModal: React.FC<AddLinkModalProps> = (props) => {
     <BaseModal onClose={handleCancel} showClose={false}>
       <Wrapper>
         <h1>Add Item to {section.label}</h1>
-        <label>Label</label>
-        <input
-          value={addLinkLabelValue}
-          onChange={(e) => setAddLinkLabelValue(e.target.value)}
-        />
+        <div>
+          <label>Label</label>
+          <input
+            value={addLinkLabelValue}
+            onChange={(e) => setAddLinkLabelValue(e.target.value)}
+          />
+        </div>
         <label>Url</label>
-        <input
-          value={addLinkURLValue}
-          onChange={(e) => setAddLinkURLValue(e.target.value)}
-        />
-        <ConfirmControls onConfirm={handleConfirm} onDecline={handleCancel} />
+        <MultiInput value={addLinkURLValue} onChange={setAddLinkURLValue} />
+        <div>
+          <ConfirmControls
+            confirmDisabled={
+              !(addLinkLabelValue || addLinkURLValue.some(Boolean))
+            }
+            onConfirm={handleConfirm}
+            onDecline={handleCancel}
+          />
+        </div>
       </Wrapper>
     </BaseModal>
   )

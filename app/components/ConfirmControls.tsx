@@ -7,18 +7,19 @@ const Wrapper = styled.span``
 type ConfirmControlsProps = {
   disabled?: boolean
   inline?: boolean
+  confirmDisabled?: boolean
   onConfirm: () => void
   onDecline: () => void
 }
 
 const ConfirmControls: React.FC<ConfirmControlsProps> = (props) => {
-  const { onConfirm, onDecline, disabled, inline } = props
+  const { onConfirm, onDecline, disabled, inline, confirmDisabled } = props
 
   return (
     <Wrapper className="confirm-controls">
       <Button
         onClick={onConfirm}
-        disabled={disabled}
+        disabled={disabled || confirmDisabled}
         emoji="✔️"
         inline={inline}
       />

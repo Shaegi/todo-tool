@@ -91,13 +91,15 @@ const getClient = (settings?: Settings) => {
 
 const Root: React.FC = () => {
   return (
-    <SettingsContextProvider>
-      <ModalContextProvider>
-        <StandUpTimerContextProvider>
-          <Inner />
-        </StandUpTimerContextProvider>
-      </ModalContextProvider>
-    </SettingsContextProvider>
+    <ThemeProvider theme={Theme}>
+      <SettingsContextProvider>
+        <ModalContextProvider>
+          <StandUpTimerContextProvider>
+            <Inner />
+          </StandUpTimerContextProvider>
+        </ModalContextProvider>
+      </SettingsContextProvider>
+    </ThemeProvider>
   )
 }
 
@@ -114,12 +116,10 @@ const Inner: React.FC = () => {
 
   return (
     <ApolloProvider client={client as any}>
-      <ThemeProvider theme={Theme}>
-        <>
-          <Global />
-          <App />
-        </>
-      </ThemeProvider>
+      <>
+        <Global />
+        <App />
+      </>
     </ApolloProvider>
   )
 }

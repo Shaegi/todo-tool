@@ -93,9 +93,9 @@ type SectionListProps = {
 
 export type SectionItem = {
   id: string
-  url: string
+  label: string
+  urls: string[]
   icon?: string
-  label?: string
 }
 
 const SectionList: React.FC<SectionListProps> = (props) => {
@@ -105,7 +105,9 @@ const SectionList: React.FC<SectionListProps> = (props) => {
   const { showModal } = useModal()
 
   const handleLink = (item: SectionItem) => {
-    shell.openExternal(item.url)
+    item.urls.forEach((url) => {
+      shell.openExternal(url)
+    })
   }
 
   const handleAddSection = (section: LinkSection) => {
@@ -129,7 +131,7 @@ const SectionList: React.FC<SectionListProps> = (props) => {
 
   const handleDeleteLink = (section: LinkSection, item: SectionItem) => {
     showModal(ModalTypes.CONFIRM, {
-      message: `Delete Link "${item.label}" to "${item.url}"?`,
+      message: `Delete Link "${item.label}" to "${item.urls.join(", ")}"?`,
       onConfirm: () => {
         persistSectionList((prev) => {
           const next = [...prev]
