@@ -33,18 +33,22 @@ const { Provider } = StandUpContext
 
 export const StandUpTimerContextProvider: React.FC<{}> = (props) => {
   const {
-    settings: { timerDefault = timerDefaultFallback },
+    settings: {
+      timerDefault = timerDefaultFallback,
+      autostartTimer,
+      muted: globalMuted,
+    },
     persistSettings,
   } = useSettings()
 
-  const [running, setRunning] = useState(true)
+  const [running, setRunning] = useState(!!autostartTimer)
   const [timer, setTimer] = useState<number>(timerDefault)
   const [finished, setFinished] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const handleLastTick = useCallback(() => {
     setFinished((p) => {
-      if (!p) {
+      if (!p && !globalMuted) {
         const notification = new remote.Notification({
           title: "Timer finished!",
           body: `Your timer has finished`,
@@ -58,9 +62,12 @@ export const StandUpTimerContextProvider: React.FC<{}> = (props) => {
     })
 
     setRunning(false)
-  }, [])
+  }, [globalMuted])
 
   useEffect(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+    }
     if (running) {
       timerRef.current = setInterval(() => {
         setTimer((p) => {
@@ -71,10 +78,8 @@ export const StandUpTimerContextProvider: React.FC<{}> = (props) => {
           return next
         })
       }, 1000)
-    } else if (timerRef.current) {
-      clearInterval(timerRef.current)
     }
-  }, [running])
+  }, [running, handleLastTick])
 
   const setUnfinished = useCallback(() => {
     setFinished(false)

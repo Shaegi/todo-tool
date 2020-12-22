@@ -72,6 +72,12 @@ const Wrapper = styled.div`
       width: 200px;
     }
   }
+
+  .add-section {
+    color: white;
+    background: ${(p) => p.theme.color.green[500]};
+    height: 30px;
+  }
 `
 
 export type LinkSection = {

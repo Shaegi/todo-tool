@@ -1,4 +1,4 @@
-import { PipelineStatus, StageStatus } from "./behaviour/useProjectData"
+import { PipelineStatus, StageStatus } from "./types"
 
 /* eslint-disable import/prefer-default-export */
 export const getIconByFailedCount = (count: number) => {

@@ -3,13 +3,11 @@ import { shell } from "electron"
 import styled from "styled-components"
 import classNames from "classnames"
 import useSettings from "../../../../behaviour/useSettings"
-import {
-  Pipeline,
-  PipelineStatus,
-  useGitUser,
-} from "../../behaviour/useProjectData"
+
 import Stages from "./Stages"
 import { pipelineStatusEmojiMap } from "../../utils"
+import { Pipeline, PipelineStatus } from "../../types"
+import useGitUser from "../../behaviour/useGitUser"
 
 export const pipelineListItemClass = "pipeline-list-item"
 

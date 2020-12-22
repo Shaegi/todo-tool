@@ -17,7 +17,12 @@ const EmojiSelect: React.FC<EmojiSelectProps> = (props) => {
   }
 
   return (
-    <select value={value} onChange={handleChange} placeholder="Select an emoji">
+    <select
+      value={value}
+      onChange={handleChange}
+      placeholder="Select an emoji"
+      className="emoji-select"
+    >
       {icons.map((i) => {
         return (
           <option key={i} selected={value === i ? true : undefined} value={i}>

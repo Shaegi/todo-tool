@@ -14,11 +14,10 @@ import MainNav, {
   STANDUP_TIMER_PATH,
   TODO_PATH,
 } from "../components/MainNav"
-import { ModalContextProvider } from "../behaviour/useModal"
 import Todo from "../Routes/Todo/Todo"
-import { useWatchProjects } from "../Routes/Pipelines/behaviour/useProjectData"
-import { StandUpTimerContextProvider } from "../behaviour/useStandUpTimer"
 import StandUpTimerRoute from "../Routes/StandUpTimer/StandUpTimerRoute"
+import TitleBar from "../components/Titlebar"
+import useWatchProjects from "../Routes/Pipelines/behaviour/useWatchProjects"
 
 const Main = styled.div`
   display: flex;
@@ -31,31 +30,28 @@ export default function App() {
   useWatchProjects()
   return (
     <DndProvider backend={HTML5Backend}>
+      <TitleBar />
       <Main>
-        <ModalContextProvider>
-          <StandUpTimerContextProvider>
-            <Router>
-              <MainNav />
-              <Switch>
-                <Route exact path={HOME_PATH}>
-                  <Home />
-                </Route>
-                <Route path={PIPELINE_PATH}>
-                  <Pipelines />
-                </Route>
-                <Route path={TODO_PATH}>
-                  <Todo />
-                </Route>
-                <Route path={SETTINGS_PATH}>
-                  <SettingsRoute />
-                </Route>
-                <Route path={STANDUP_TIMER_PATH}>
-                  <StandUpTimerRoute />
-                </Route>
-              </Switch>
-            </Router>
-          </StandUpTimerContextProvider>
-        </ModalContextProvider>
+        <Router>
+          <MainNav />
+          <Switch>
+            <Route exact path={HOME_PATH}>
+              <Home />
+            </Route>
+            <Route path={PIPELINE_PATH}>
+              <Pipelines />
+            </Route>
+            <Route path={TODO_PATH}>
+              <Todo />
+            </Route>
+            <Route path={SETTINGS_PATH}>
+              <SettingsRoute />
+            </Route>
+            <Route path={STANDUP_TIMER_PATH}>
+              <StandUpTimerRoute />
+            </Route>
+          </Switch>
+        </Router>
       </Main>
     </DndProvider>
   )

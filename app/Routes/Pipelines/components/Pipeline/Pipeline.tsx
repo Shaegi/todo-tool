@@ -1,18 +1,19 @@
 import React, { useCallback, useMemo, useState } from "react"
 import styled from "styled-components"
+import { shell } from "electron"
 import ListHeadline from "../../../../components/ListHeadline"
 import PipelineFilter, {
   FilterItem,
   PipelineFilterProps,
 } from "./PipelineFilter"
 import PipelineListItem, { pipelineListItemClass } from "./PipelineListIem"
-import {
-  PipelineStatus,
-  useGitUser,
-  useProjectData,
-} from "../../behaviour/useProjectData"
+import { useProjectData } from "../../behaviour/useProjectData"
 import { pipelineStatusEmojiMap } from "../../utils"
 import Button from "../../../../components/common/Button"
+import { mutedProjects } from "../../../../containers/Root"
+import useSettings from "../../../../behaviour/useSettings"
+import useGitUser from "../../behaviour/useGitUser"
+import { PipelineStatus } from "../../types"
 
 const StyledPipeline = styled.ul`
   max-height: 95%;
@@ -65,6 +66,13 @@ const userFilterItems: FilterItem[] = [
 const Pipeline: React.FC<PipelineProps> = (props) => {
   const { fullPath, id, onDelete, label, onEditLabel } = props
   const { data, loading } = useProjectData(fullPath)
+  const {
+    settings: { muted: globalMuted },
+    persistSettings,
+  } = useSettings()
+  const {
+    settings: { git },
+  } = useSettings()
   const [statusFilter, setStatusFilter] = useState<
     PipelineFilterProps["value"]
   >(null)
@@ -102,6 +110,11 @@ const Pipeline: React.FC<PipelineProps> = (props) => {
     }
     return []
   }, [data, statusFilter, userFilter])
+  const handleOpen = useCallback(() => {
+    if (git && fullPath) {
+      shell.openExternal(git + fullPath)
+    }
+  }, [git, fullPath])
 
   const handleEditLabel = useCallback(
     (newLabel: string) => {
@@ -117,7 +130,31 @@ const Pipeline: React.FC<PipelineProps> = (props) => {
     return <div>Received corrupted data. Try again or delete project.</div>
   }
   const { project } = data
-  const { name } = project
+  const { name, muted, id: projectId } = project
+
+  const handleSetMuted = () => {
+    const next = [...mutedProjects()]
+    if (globalMuted && !muted) {
+      persistSettings?.("muted", false)
+    }
+    if (!muted) {
+      mutedProjects([...next, projectId])
+    } else {
+      mutedProjects(next.filter((i) => i !== projectId))
+    }
+  }
+
+  const AdditionalHeadlineControls = (
+    <>
+      <Button
+        onClick={handleSetMuted}
+        emoji={muted || globalMuted ? "🔕" : "🔔"}
+      />
+      <Button onClick={handleOpen} emoji="🌍">
+        Open
+      </Button>
+    </>
+  )
 
   return (
     <StyledPipeline>
@@ -125,6 +162,7 @@ const Pipeline: React.FC<PipelineProps> = (props) => {
         label={label || name}
         onDelete={handleDeletePipeline}
         onEditLabel={handleEditLabel}
+        AdditionalControls={AdditionalHeadlineControls}
       />
       <div className="filter">
         <div className="filter-label">Filter</div>

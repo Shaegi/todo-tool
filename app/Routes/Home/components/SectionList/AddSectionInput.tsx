@@ -1,8 +1,22 @@
 import React from "react"
+import styled from "styled-components"
 import { v4 } from "uuid"
 import ConfirmControls from "../../../../components/ConfirmControls"
 import EmojiSelect from "../../../../components/EmojiSelect"
 import { LinkSection } from "./SectionList"
+
+const Wrapper = styled.div`
+  display: flex;
+  .inputs {
+    input,
+    select {
+      box-sizing: border-box;
+    }
+    .emoji-select {
+      height: 30px;
+    }
+  }
+`
 
 type AddSectionInputProps = {
   onAdd: (section: LinkSection) => void
@@ -43,20 +57,22 @@ const AddSectionInput: React.FC<AddSectionInputProps> = (props) => {
         </button>
       )}
       {addSectionMode && (
-        <>
-          <input
-            value={addSectionValue}
-            onChange={(e) => setAddActionValue(e.target.value)}
-          />
-          <EmojiSelect
-            onChange={(e) => setSectionIconValue(e.target.value)}
-            initialValue={sectionIconValue}
-          />
+        <Wrapper>
+          <div className="inputs">
+            <input
+              value={addSectionValue}
+              onChange={(e) => setAddActionValue(e.target.value)}
+            />
+            <EmojiSelect
+              onChange={(e) => setSectionIconValue(e.target.value)}
+              initialValue={sectionIconValue}
+            />
+          </div>
           <ConfirmControls
             onConfirm={handleAdd}
             onDecline={handleCancelSectionMode}
           />
-        </>
+        </Wrapper>
       )}
     </>
   )

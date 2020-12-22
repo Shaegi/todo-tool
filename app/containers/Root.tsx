@@ -5,6 +5,7 @@ import {
   ApolloProvider,
   ApolloClient,
   createHttpLink,
+  makeVar,
 } from "@apollo/client"
 import { setContext } from "@apollo/client/link/context"
 import Theme from "../constants/Theme"
@@ -14,6 +15,8 @@ import useSettings, {
   SettingsContextProvider,
   Settings,
 } from "../behaviour/useSettings"
+import { StandUpTimerContextProvider } from "../behaviour/useStandUpTimer"
+import { ModalContextProvider } from "../behaviour/useModal"
 
 const Global = createGlobalStyle<any>`
 
@@ -50,6 +53,8 @@ const Global = createGlobalStyle<any>`
   }
 `
 
+export const mutedProjects = makeVar<string[]>([])
+
 const getClient = (settings?: Settings) => {
   const httpLink = createHttpLink({
     uri: settings?.gitAPI,
@@ -68,7 +73,18 @@ const getClient = (settings?: Settings) => {
   })
   return new ApolloClient({
     link: authLink.concat(httpLink),
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      typePolicies: {
+        Project: {
+          fields: {
+            muted: (_, config) => {
+              const id = config.readField("id")
+              return mutedProjects().includes(id as string)
+            },
+          },
+        },
+      },
+    }),
     uri: settings?.gitAPI,
   })
 }
@@ -76,7 +92,11 @@ const getClient = (settings?: Settings) => {
 const Root: React.FC = () => {
   return (
     <SettingsContextProvider>
-      <Inner />
+      <ModalContextProvider>
+        <StandUpTimerContextProvider>
+          <Inner />
+        </StandUpTimerContextProvider>
+      </ModalContextProvider>
     </SettingsContextProvider>
   )
 }
@@ -97,7 +117,6 @@ const Inner: React.FC = () => {
       <ThemeProvider theme={Theme}>
         <>
           <Global />
-          <TitleBar />
           <App />
         </>
       </ThemeProvider>

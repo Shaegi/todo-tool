@@ -61,18 +61,6 @@ const MainNav = () => {
       ),
     },
     {
-      key: SETTINGS_PATH,
-      active: !!isSettings,
-      Renderer: (
-        <Link to={SETTINGS_PATH}>
-          <div>
-            ⚙️ <br />
-            Settings
-          </div>
-        </Link>
-      ),
-    },
-    {
       key: STANDUP_TIMER_PATH,
       active: !!isStandUpTimer,
       Renderer: (
@@ -84,15 +72,31 @@ const MainNav = () => {
         >
           <div>
             <div>
-              {(timerRunning || timerFinished) && (
+              {timerRunning || timerFinished ? (
                 <div>
                   <FlashingText flashing={timerFinished}>
                     {timer.formatted}
                   </FlashingText>
                 </div>
+              ) : (
+                <>
+                  ⏰ <br />
+                </>
               )}
               Timer
             </div>
+          </div>
+        </Link>
+      ),
+    },
+    {
+      key: SETTINGS_PATH,
+      active: !!isSettings,
+      Renderer: (
+        <Link to={SETTINGS_PATH}>
+          <div>
+            ⚙️ <br />
+            Settings
           </div>
         </Link>
       ),

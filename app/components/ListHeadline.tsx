@@ -23,10 +23,17 @@ type ListHeadlineProps = {
   onDelete: () => void
   onEditLabel?: (newLabel: string) => void
   customConfirmMessage?: string
+  AdditionalControls?: React.ReactNode
 }
 
 const ListHeadline: React.FC<ListHeadlineProps> = (props) => {
-  const { onDelete, customConfirmMessage, onEditLabel, emoji } = props
+  const {
+    onDelete,
+    customConfirmMessage,
+    onEditLabel,
+    emoji,
+    AdditionalControls,
+  } = props
   const { showModal } = useModal()
   const [editMode, setEditMode] = useState(false)
   const [label, setLabel] = useState<string>(props.label)
@@ -80,6 +87,7 @@ const ListHeadline: React.FC<ListHeadlineProps> = (props) => {
       >
         Delete
       </Button>
+      {AdditionalControls || null}
     </Wrapper>
   )
 }

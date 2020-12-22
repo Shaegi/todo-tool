@@ -37,6 +37,15 @@ const SettingsRoute: React.FC<SettingsProps> = () => {
     <Wrapper>
       <h1>Settings</h1>
       <div className="section">
+        <h2>General</h2>
+        <div className="content">
+          <SettingsCheckbox
+            valueKey="autostartTimer"
+            label="Autostart Timer"
+            value={settings?.autostartTimer}
+            onChange={persistSettings}
+          />
+        </div>
         <h2>Git</h2>
         <div className="content">
           <SettingsInput
@@ -110,6 +119,30 @@ const SettingsInput: React.FC<SettingsInputProps> = ({
     <>
       <label>{label}</label>
       <input value={value} onChange={handleChange} />
+    </>
+  )
+}
+
+type SettingCheckboxProps = {
+  label: string
+  valueKey: keyof Settings
+  value: boolean | undefined
+  onChange?: ReturnType<typeof useSettings>["persistSettings"]
+}
+
+const SettingsCheckbox: React.FC<SettingCheckboxProps> = ({
+  label,
+  valueKey,
+  value,
+  onChange,
+}) => {
+  const handleChange = useCallback((e) => {
+    onChange?.(valueKey, e.target.checked)
+  }, [])
+  return (
+    <>
+      <label>{label}</label>
+      <input type="checkbox" checked={value} onChange={handleChange} />
     </>
   )
 }

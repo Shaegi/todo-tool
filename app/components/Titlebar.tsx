@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import styled from "styled-components"
 import ClearIcon from "@material-ui/icons/Clear"
 import MinimizeIcon from "@material-ui/icons/Minimize"
 import { remote } from "electron"
 import Crop32Icon from "@material-ui/icons/Crop32"
 import FilterNoneIcon from "@material-ui/icons/FilterNone"
+import useSettings from "../behaviour/useSettings"
 
 const Wrapper = styled.div`
   display: flex;
@@ -47,6 +48,10 @@ const TitleBar: React.FC<TitleBarProps> = () => {
   const [isMaximized, setMaximized] = useState(
     remote.getCurrentWindow().isMaximized
   )
+  const {
+    settings: { muted },
+    persistSettings,
+  } = useSettings()
 
   useEffect(() => {
     const resizeListener = () => {
@@ -59,11 +64,18 @@ const TitleBar: React.FC<TitleBarProps> = () => {
     }
   }, [])
 
+  const handleClickMuted = useCallback(() => {
+    persistSettings?.("muted", !muted)
+  }, [muted])
+
   return (
     <Wrapper>
       <div className="dragbar">
         <span className="titlebar-title">Todo-Tool</span>
       </div>
+      <button type="button" className="mute" onClick={handleClickMuted}>
+        {muted ? "🔕" : "🔔"}
+      </button>
       {remote.getCurrentWindow().minimizable && (
         <button
           type="button"

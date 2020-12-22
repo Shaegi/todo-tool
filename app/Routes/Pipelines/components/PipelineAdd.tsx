@@ -5,7 +5,7 @@ import React, { useState } from "react"
 import styled from "styled-components"
 import { v4 } from "uuid"
 import Button from "../../../components/common/Button"
-import { ProjectQuery, ProjectQueryResult } from "../behaviour/useProjectData"
+import { ProjectQuery, ProjectQueryResult } from "../behaviour/gql/ProjectQuery"
 import { PipelineItem } from "../Pipelines"
 
 const Wrapper = styled.div`

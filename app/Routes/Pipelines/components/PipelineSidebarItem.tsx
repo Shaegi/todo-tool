@@ -1,5 +1,7 @@
 import React, { useMemo } from "react"
-import { PipelineStatus, useProjectData } from "../behaviour/useProjectData"
+import useSettings from "../../../behaviour/useSettings"
+import { useProjectData } from "../behaviour/useProjectData"
+import { PipelineStatus } from "../types"
 import { getIconByFailedCount, pipelineStatusEmojiMap } from "../utils"
 
 type PipelineSidebarItemProps = {
@@ -16,6 +18,9 @@ const PipelineSidebarItem: React.FC<PipelineSidebarItemProps> = ({
   addItem,
 }) => {
   const { data, loading } = useProjectData(fullPath, !!addItem)
+  const {
+    settings: { muted: globalMuted },
+  } = useSettings()
 
   const { failedCount, isRunning } = useMemo(() => {
     let isRunning = false
@@ -50,6 +55,7 @@ const PipelineSidebarItem: React.FC<PipelineSidebarItemProps> = ({
             {isRunning
               ? pipelineStatusEmojiMap[PipelineStatus.RUNNING]
               : getIconByFailedCount(failedCount)}
+            {(data?.project.muted || globalMuted) && "🔕"}
             <br />
             {customLabel || (data && data.project.name)}
           </span>
